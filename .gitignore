@@ -1,3 +1,10 @@
 backend/venv/
 *.md
+portfolio.json
 
+__pycache__/
+backend/__pycache__/
+.env
+.env.example
+.env.local
+.env.production
