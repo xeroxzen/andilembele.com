@@ -26,7 +26,6 @@ A beautiful, modern, and responsive portfolio website showcasing the work and ac
 - **About Me**: Personal story and technical skills
 - **Professional Experience**: Timeline-based work history
 - **Featured Projects**: Showcase of key projects with metrics
-- **Dynamic Blog**: Latest articles with filtering and pagination
 - **Contact Form**: Interactive contact form with validation
 
 ## 🎨 Design System
@@ -81,9 +80,6 @@ Portfolio-Update/
 ├── index.html          # Main HTML structure
 ├── styles.css          # All styling and theming
 ├── script.js           # Interactive functionality
-├── blog.html           # Dedicated blog page
-├── blog.js             # Blog functionality and content
-├── blog-template.md    # Template for new blog posts
 └── README.md           # Documentation
 ```
 
@@ -108,21 +104,7 @@ Portfolio-Update/
 2. Add corresponding CSS styles in `styles.css`
 3. Update navigation links if needed
 
-### Adding New Blog Posts
 
-1. Use the `blog-template.md` file as a starting point
-2. Fill in the metadata (title, excerpt, category, date, etc.)
-3. Write your content using HTML formatting
-4. Add the post to the `blogPosts` array in `blog.js`
-5. Test the post on your local server
-
-### Blog Categories
-
-- **Technology**: General technology topics
-- **AI & ML**: Artificial Intelligence and Machine Learning
-- **Startup**: Entrepreneurship and startup experiences
-- **Engineering**: Technical engineering topics
-- **Africa Tech**: African technology and innovation
 
 ## 📱 Responsive Breakpoints
 
@@ -185,7 +167,6 @@ Portfolio-Update/
 
 ### Planned Features
 
-- **Enhanced Blog**: Markdown support, CMS integration, search functionality
 - **Portfolio Gallery**: Visual showcase of projects
 - **Testimonials**: Client and colleague recommendations
 - **Resume Download**: PDF version of experience
@@ -196,7 +177,6 @@ Portfolio-Update/
 - **Service Worker**: Offline functionality
 - **PWA Features**: Installable web app
 - **Analytics Integration**: Visitor insights
-- **Contact Form Backend**: Server-side form processing
 
 ## 📄 License
 
