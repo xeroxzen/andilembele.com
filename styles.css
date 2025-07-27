@@ -962,3 +962,142 @@ a:focus {
     transform: rotate(360deg);
   }
 }
+
+/* Image Styles */
+.hero-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-image {
+  width: 300px;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-image:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.about-image {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.workspace-image {
+  width: 100%;
+  max-width: 500px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease;
+}
+
+.workspace-image:hover {
+  transform: scale(1.02);
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.company-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+}
+
+.project-image {
+  margin-bottom: 1.5rem;
+}
+
+.project-screenshot {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.project-screenshot:hover {
+  transform: scale(1.05);
+}
+
+.publication-image {
+  margin-bottom: 1.5rem;
+}
+
+.publication-screenshot {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.publication-screenshot:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments for images */
+@media (max-width: 768px) {
+  .hero-image {
+    order: -1;
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-image {
+    width: 250px;
+    height: 350px;
+  }
+
+  .workspace-image {
+    height: 250px;
+  }
+
+  .company-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .company-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .project-screenshot,
+  .publication-screenshot {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-image {
+    width: 200px;
+    height: 280px;
+  }
+
+  .workspace-image {
+    height: 200px;
+  }
+
+  .project-screenshot,
+  .publication-screenshot {
+    height: 150px;
+  }
+}
