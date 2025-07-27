@@ -13,26 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies (if any)
-        run: |
-          if [ -f "package.json" ]; then
-            npm ci
-          fi
-
-      - name: Build project (if needed)
-        run: |
-          if [ -f "package.json" ] && npm run build; then
-            echo "Build completed"
-          else
-            echo "No build step required"
-          fi
-
       - name: Deploy to Vultr Server
         uses: appleboy/ssh-action@v1.0.3
         with:
