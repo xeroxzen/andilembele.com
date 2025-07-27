@@ -8,6 +8,8 @@
       name="description"
       content="Andile Jaden Mbele is a dynamic Zimbabwean technologist and product builder, passionate about solving real-world problems through code and innovation."
     />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,13 +28,14 @@
       <header class="header">
         <nav class="nav">
           <div class="nav-brand">
-            <h2>AM</h2>
+            <h2>Google Jr</h2>
           </div>
           <div class="nav-links">
             <a href="#about" class="nav-link">About</a>
             <a href="#experience" class="nav-link">Experience</a>
             <a href="#projects" class="nav-link">Projects</a>
-            <a href="#blog" class="nav-link">Blog</a>
+            <a href="#publications" class="nav-link">Publications</a>
+            <a href="#resume" class="nav-link">Resume</a>
             <a href="#contact" class="nav-link">Contact</a>
           </div>
           <button
@@ -71,7 +74,7 @@
               <span class="stat-label">GitHub Contributions</span>
             </div>
             <div class="stat">
-              <span class="stat-number">Top 1%</span>
+              <span class="stat-number">Top 1% Developer</span>
               <span class="stat-label">Git Wrapped</span>
             </div>
             <div class="stat">
@@ -189,6 +192,12 @@
                   Led migration of 4TB on-prem warehouse to cloud-native
                   lakehouse, cutting query latency by 70%
                 </li>
+                <li>
+                  Contributed to Darkside, District4's flagship open-source data
+                  solution leveraging one of the largest repositories of
+                  compromised credentials and person of interest data for cyber
+                  threat intelligence
+                </li>
               </ul>
             </div>
           </div>
@@ -197,7 +206,7 @@
             <div class="timeline-marker"></div>
             <div class="timeline-content">
               <div class="timeline-header">
-                <h3>Lead Software Engineer</h3>
+                <h3>Lead Software Developer</h3>
                 <span class="company">Solugrowth</span>
                 <span class="period">Aug 2024 – Dec 2024</span>
               </div>
@@ -214,6 +223,42 @@
                 <li>
                   Architected micro-service scoring pipelines processing 10k+
                   supplier records/hour
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <h3>Teaching Assistant & Co-Instructor</h3>
+                <span class="company">Emzini We Code</span>
+                <span class="period">2020 – Present</span>
+              </div>
+              <p class="location">Harare, Zimbabwe</p>
+              <ul class="achievements">
+                <li>
+                  Served as Teaching Assistant (2020-2024) supporting CS7: An
+                  Introduction to Programming and Computer Science, co-taught
+                  with Eric Khumalo
+                </li>
+                <li>
+                  Promoted to Co-Instructor (2025) for the CS7 class, leading
+                  curriculum development and hands-on programming workshops
+                </li>
+                <li>
+                  Mentored 100+ students in Python programming, functional
+                  programming, data abstraction, and object-oriented programming
+                  concepts
+                </li>
+                <li>
+                  Supported course delivery including lab exercises, homework
+                  assignments, and three major programming projects
+                </li>
+                <li>
+                  Facilitated collaborative learning through project
+                  partnerships, office hours, and Piazza discussion forums
                 </li>
               </ul>
             </div>
@@ -309,21 +354,116 @@
         </div>
       </section>
 
-      <!-- Blog Section -->
-      <section class="blog" id="blog">
+      <!-- Publications Section -->
+      <section class="publications" id="publications">
         <div class="section-header">
-          <h2>Latest Articles</h2>
-          <p>Thoughts on technology, innovation, and building solutions</p>
+          <h2>Publications & Writing</h2>
+          <p>
+            Thoughts on technology, innovation, and building solutions in Africa
+          </p>
         </div>
-        <div class="blog-grid" id="blogGrid">
-          <!-- Blog posts will be dynamically loaded here -->
-          <div class="blog-loading">
-            <div class="loading-spinner"></div>
-            <p>Loading articles...</p>
+        <div class="publications-grid">
+          <div class="publication-card">
+            <div class="publication-header">
+              <h3>Rooibos Radar</h3>
+              <span class="publication-type">Startup & Tech Newsletter</span>
+            </div>
+            <p class="publication-description">
+              A weekly newsletter covering the latest developments in African
+              tech, startup ecosystem insights, and emerging technology trends
+              across the continent.
+            </p>
+            <div class="publication-highlights">
+              <span class="highlight">Weekly insights</span>
+              <span class="highlight">African tech focus</span>
+              <span class="highlight">Startup ecosystem</span>
+            </div>
+            <div class="publication-links">
+              <a
+                href="https://rooibosradar.com"
+                target="_blank"
+                rel="noopener"
+                class="publication-link"
+              >
+                <i class="fas fa-external-link-alt"></i> Subscribe
+              </a>
+            </div>
+          </div>
+
+          <div class="publication-card">
+            <div class="publication-header">
+              <h3>Medium Blog</h3>
+              <span class="publication-type">Personal Blog</span>
+            </div>
+            <p class="publication-description">
+              Personal blog sharing insights on software engineering, AI/ML
+              applications, startup experiences, and thoughts on building
+              technology solutions.
+            </p>
+            <div class="publication-highlights">
+              <span class="highlight">Tech insights</span>
+              <span class="highlight">AI/ML focus</span>
+              <span class="highlight">Startup stories</span>
+            </div>
+            <div class="publication-links">
+              <a
+                href="https://medium.com/@andilembele"
+                target="_blank"
+                rel="noopener"
+                class="publication-link"
+              >
+                <i class="fas fa-external-link-alt"></i> Read Articles
+              </a>
+            </div>
           </div>
         </div>
-        <div class="blog-actions">
-          <a href="blog.html" class="btn btn-secondary">View All Articles</a>
+      </section>
+
+      <!-- Resume Section -->
+      <section class="resume" id="resume">
+        <div class="section-header">
+          <h2>Resume</h2>
+          <p>Download my professional experience and skills</p>
+        </div>
+        <div class="resume-content">
+          <div class="resume-card">
+            <div class="resume-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="resume-info">
+              <h3>Andile Mbele - Resume</h3>
+              <p>
+                Comprehensive overview of my professional experience, technical
+                skills, and achievements in software engineering and technology
+                leadership.
+              </p>
+              <div class="resume-details">
+                <span class="resume-detail">
+                  <i class="fas fa-calendar"></i>
+                  Updated: July 2025
+                </span>
+                <span class="resume-detail">
+                  <i class="fas fa-file-alt"></i>
+                  PDF Format
+                </span>
+              </div>
+            </div>
+            <div class="resume-actions">
+              <a href="Andile_Mbele_2025.pdf" class="btn btn-primary" download>
+                <i class="fas fa-download"></i>
+                Download Resume
+              </a>
+              <a
+                href="#"
+                class="btn btn-secondary"
+                target="_blank"
+                rel="noopener"
+              >
+                <i class="fas fa-eye"></i>
+                View Online
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -404,12 +544,19 @@
       <!-- Footer -->
       <footer class="footer">
         <div class="footer-content">
-          <p>&copy; <script>document.write(new Date().getFullYear());</script> Andile Mbele. Built with passion and purpose.</p>
+          <p>
+            &copy;
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            Andile Mbele. Built with passion and purpose.
+          </p>
           <div class="footer-links">
             <a href="#about">About</a>
             <a href="#experience">Experience</a>
             <a href="#projects">Projects</a>
-            <a href="#blog">Blog</a>
+            <a href="#publications">Publications</a>
+            <a href="#resume">Resume</a>
             <a href="#contact">Contact</a>
           </div>
         </div>
@@ -417,12 +564,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="blog-api.js"></script>
-    <script>
-      // Initialize the main page blog loader for featured posts
-      document.addEventListener("DOMContentLoaded", function () {
-        window.mainPageBlog = new MainPageBlogAPI();
-      });
-    </script>
   </body>
 </html>
