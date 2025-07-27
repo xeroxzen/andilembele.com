@@ -12,8 +12,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-SERVER_IP=${1:-"YOUR_SERVER_IP"}
-USERNAME=${2:-"root"}
+SERVER_IP=${1:-"139.84.233.151"}
+USERNAME=${2:-"srvadmin"}
 DOMAIN="andilembele.com"
 DEPLOY_PATH="/var/www/andilembele.com"
 
