@@ -1,0 +1,69 @@
+name: Deploy to Vultr Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies (if any)
+        run: |
+          if [ -f "package.json" ]; then
+            npm ci
+          fi
+
+      - name: Build project (if needed)
+        run: |
+          if [ -f "package.json" ] && npm run build; then
+            echo "Build completed"
+          else
+            echo "No build step required"
+          fi
+
+      - name: Deploy to Vultr Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: ${{ secrets.VULTR_PORT }}
+          script: |
+            cd /var/www/andilembele.com
+            git pull origin main
+            chown -R www-data:www-data /var/www/andilembele.com
+            chmod -R 755 /var/www/andilembele.com
+            systemctl reload nginx
+            echo "Deployment completed at $(date)" >> /var/log/deploy.log
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VULTR_HOST }}
+          username: ${{ secrets.VULTR_USERNAME }}
+          key: ${{ secrets.VULTR_SSH_KEY }}
+          port: ${{ secrets.VULTR_PORT }}
+          script: |
+            curl -f -I https://andilembele.com || exit 1
+            echo "Website is accessible"
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful! Website is live at https://andilembele.com"
+          else
+            echo "❌ Deployment failed. Check the logs for details."
+          fi
