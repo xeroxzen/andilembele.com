@@ -22,11 +22,14 @@ jobs:
           port: ${{ vars.SSH_PORT }}
           script: |
             cd /var/www/andilembele.com
+            # Fix git ownership issue first
+            git config --global --add safe.directory /var/www/andilembele.com
             git pull origin main
-            chown -R www-data:www-data /var/www/andilembele.com
-            chmod -R 755 /var/www/andilembele.com
-            systemctl reload nginx
-            echo "Deployment completed at $(date)" >> /var/log/deploy.log
+            # Use sudo for privileged operations
+            sudo chown -R www-data:www-data /var/www/andilembele.com
+            sudo chmod -R 755 /var/www/andilembele.com
+            sudo systemctl reload nginx
+            sudo sh -c 'echo "Deployment completed at $(date)" >> /var/log/deploy.log'
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
@@ -38,6 +41,8 @@ jobs:
           script: |
             curl -f -I https://andilembele.com || exit 1
             echo "Website is accessible"
+            # Also check nginx status
+            sudo systemctl status nginx --no-pager || echo "Nginx status check failed but continuing..."
 
       - name: Notify deployment status
         if: always()
