@@ -37,21 +37,41 @@ echo -e "${GREEN}✅ SSH connection successful${NC}"
 # Deploy to server
 echo -e "${YELLOW}📦 Deploying to server...${NC}"
 ssh $USERNAME@$SERVER_IP << 'EOF'
+    # Create deployment directory if it doesn't exist
+    if [ ! -d "/var/www/andilembele.com" ]; then
+        echo "📁 Creating deployment directory..."
+        sudo mkdir -p /var/www/andilembele.com
+        sudo chown $USER:www-data /var/www/andilembele.com
+        sudo chmod 775 /var/www/andilembele.com
+    fi
+    
     # Navigate to deployment directory
     cd /var/www/andilembele.com
     
-    # Pull latest changes
-    git pull origin main
+    # Initialize git repository if it doesn't exist
+    if [ ! -d ".git" ]; then
+        echo "🔧 Initializing git repository..."
+        git init
+        git remote add origin git@github.com:xeroxzen/Portfolio-Update.git
+    fi
+    
+    # Pull latest changes (or clone if first time)
+    if git remote get-url origin >/dev/null 2>&1; then
+        git pull origin main
+    else
+        echo "⚠️  Git remote not configured. Please set up the repository manually."
+        exit 1
+    fi
     
     # Set proper permissions
-    chown -R www-data:www-data /var/www/andilembele.com
-    chmod -R 755 /var/www/andilembele.com
+    sudo chown -R www-data:www-data /var/www/andilembele.com
+    sudo chmod -R 755 /var/www/andilembele.com
     
     # Reload Nginx
-    systemctl reload nginx
+    sudo systemctl reload nginx
     
     # Log deployment
-    echo "Manual deployment completed at $(date)" >> /var/log/deploy.log
+    echo "Manual deployment completed at $(date)" | sudo tee -a /var/log/deploy.log
     
     echo "✅ Deployment completed on server"
 EOF
