@@ -24,12 +24,16 @@ jobs:
             cd /var/www/andilembele.com
             # Fix git ownership issue first
             git config --global --add safe.directory /var/www/andilembele.com
+            # Reset git permissions to allow pull
+            chmod -R 755 .git
             git pull origin main
-            # Use sudo for privileged operations
-            sudo chown -R www-data:www-data /var/www/andilembele.com
-            sudo chmod -R 755 /var/www/andilembele.com
-            sudo systemctl reload nginx
-            sudo sh -c 'echo "Deployment completed at $(date)" >> /var/log/deploy.log'
+            # Set proper permissions for web files (without sudo)
+            chmod -R 644 *.html *.css *.js *.ico *.svg *.xml *.txt *.webmanifest *.pdf
+            chmod -R 644 images/*
+            chmod 755 images/
+            chmod 755 .
+            # Create deployment log in user's home directory
+            echo "Deployment completed at $(date)" >> ~/deploy.log
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
@@ -41,8 +45,13 @@ jobs:
           script: |
             curl -f -I https://andilembele.com || exit 1
             echo "Website is accessible"
-            # Also check nginx status
-            sudo systemctl status nginx --no-pager || echo "Nginx status check failed but continuing..."
+            # Check if deployment log was created
+            if [ -f ~/deploy.log ]; then
+              echo "Deployment log found:"
+              tail -1 ~/deploy.log
+            else
+              echo "No deployment log found"
+            fi
 
       - name: Notify deployment status
         if: always()
