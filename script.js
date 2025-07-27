@@ -44,6 +44,56 @@ class ThemeManager {
   }
 }
 
+// Mobile menu functionality
+class MobileMenu {
+  constructor() {
+    this.mobileMenuToggle = document.getElementById("mobileMenuToggle");
+    this.mobileMenu = document.getElementById("mobileMenu");
+    this.init();
+  }
+
+  init() {
+    this.mobileMenuToggle.addEventListener("click", () => {
+      this.toggleMenu();
+    });
+
+    // Close menu when clicking on a link
+    const mobileNavLinks = this.mobileMenu.querySelectorAll(".nav-link");
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        this.closeMenu();
+      });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!this.mobileMenuToggle.contains(e.target) && !this.mobileMenu.contains(e.target)) {
+        this.closeMenu();
+      }
+    });
+  }
+
+  toggleMenu() {
+    this.mobileMenu.classList.toggle("active");
+    const icon = this.mobileMenuToggle.querySelector("i");
+    
+    if (this.mobileMenu.classList.contains("active")) {
+      icon.className = "fas fa-times";
+      document.body.style.overflow = "hidden";
+    } else {
+      icon.className = "fas fa-bars";
+      document.body.style.overflow = "";
+    }
+  }
+
+  closeMenu() {
+    this.mobileMenu.classList.remove("active");
+    const icon = this.mobileMenuToggle.querySelector("i");
+    icon.className = "fas fa-bars";
+    document.body.style.overflow = "";
+  }
+}
+
 // Smooth scrolling for navigation links
 class SmoothScroller {
   constructor() {
@@ -205,6 +255,7 @@ class TypingAnimation {
 // Initialize all classes when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   new ThemeManager();
+  new MobileMenu();
   new SmoothScroller();
   new ContactForm();
   new ScrollAnimations();
