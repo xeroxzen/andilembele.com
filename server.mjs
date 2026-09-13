@@ -36,7 +36,7 @@ return async(req,res)=>{try{
  if(!['GET','HEAD'].includes(req.method))return json(res,{error:'Method not allowed'},405);
  let file;
  if(pathname.startsWith('/media/')){if(!/^\/media\/[a-f0-9-]+\.(png|jpg|webp)$/.test(pathname))throw Error('Invalid media path');file=path.join(data,pathname.slice(1));}
- else {const route=pathname==='/'?'/index.html':pathname==='/writing'||pathname==='/writing/'||pathname==='/blog'||pathname==='/blog/'||/^\/blog\/[a-z0-9-]+$/.test(pathname)?'/blog/index.html':pathname;file=path.resolve(root,'.'+route);if(!file.startsWith(root))return json(res,{error:'Forbidden'},403);}
+ else {const route=pathname==='/'?'/index.html':pathname==='/blog'||pathname==='/blog/'||/^\/blog\/[a-z0-9-]+$/.test(pathname)?'/blog/index.html':pathname;file=path.resolve(root,'.'+route);if(!file.startsWith(root))return json(res,{error:'Forbidden'},403);}
  const bytes=await readFile(file);res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);
  }catch(e){if(e.code==='ENOENT')return json(res,{error:'Not found'},404);json(res,{error:e.message||'Request failed'},400);}
 };
