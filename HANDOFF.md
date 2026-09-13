@@ -1,5 +1,6 @@
 # Andile's blog and CMS handoff
 
+Current backend status: Firebase project `andile-portfolio-personal` is registered under the temporary personal owner, without billing or an organization parent. Production CMS integration is still outstanding. See [FIREBASE-SETUP.md](FIREBASE-SETUP.md) and [BACKEND-AUDIT.md](BACKEND-AUDIT.md); older unconfigured-provider notes below describe the initial handoff.
 ## Works now, entirely locally
 
 Run `npm start` from this folder. Home: http://127.0.0.1:4173. Blog: /blog. Editor: /blog/admin.

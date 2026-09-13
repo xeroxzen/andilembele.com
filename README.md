@@ -1,5 +1,6 @@
 # Andile Jaden Mbele
 
+Current backend status: Firebase project `andile-portfolio-personal` is registered under the temporary personal owner, without billing or an organization parent. Production CMS integration is still outstanding. See [FIREBASE-SETUP.md](FIREBASE-SETUP.md) and [BACKEND-AUDIT.md](BACKEND-AUDIT.md); older unconfigured-provider notes below describe the initial handoff.
 A minimal personal website with a responsive experience timeline, selected projects, entrepreneurship, talks, and a local blog/CMS.
 
 ## Run locally
