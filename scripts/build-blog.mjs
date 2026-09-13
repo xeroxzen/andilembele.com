@@ -1,11 +1,12 @@
 import {readFile,writeFile} from 'node:fs/promises';
+import {renderSocialMeta} from '../components/social-meta.mjs';
 import {renderFooter} from '../components/footer.mjs';
 import {indexMarkup} from '../dist/blog/listing.js';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const posts=JSON.parse(await read('dist/blog/medium-posts.json'));
-await writeFile(new URL('dist/index.html',root),(await read('templates/home.html')).replace('{{footer}}',renderFooter()));
-let shell=(await read('templates/blog.html')).replace('{{footer}}',renderFooter()).replace('{{content}}',indexMarkup(posts));
+await writeFile(new URL('dist/index.html',root),(await read('templates/home.html')).replace('{{footer}}',renderFooter()).replace('{{socialMeta}}',renderSocialMeta()));
+let shell=(await read('templates/blog.html')).replace('{{footer}}',renderFooter()).replace('{{socialMeta}}',renderSocialMeta({blog:true})).replace('{{content}}',indexMarkup(posts));
 shell=shell.replace('<title>Writing ·','<title>Blog ·');
 await writeFile(new URL('dist/blog/index.html',root),shell);
 // A self-contained public preview for static servers; never includes private posts or CMS access.
