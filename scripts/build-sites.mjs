@@ -24,6 +24,5 @@ for(const route of ['admin','admin/posts','blog/admin']){
  await mkdir(new URL(route+'/',out),{recursive:true});
  await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(/<main id="app">[\s\S]*?<\/main>/,'<main id="app"><section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section></main>'));
 }
-await writeFile(new URL('404.html',out),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Page not found · Andile Jaden Mbele</title><link rel="stylesheet" href="/styles.css"><main class="page intro"><h1>Page not found.</h1><p class="about">Try the <a href="/">homepage</a> or <a href="/blog/">writing archive</a>.</p></main><div class="page">${renderFooter()}</div></html>`);
+await writeFile(new URL('404.html',out),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#fcfefc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0d120e" media="(prefers-color-scheme: dark)"><title>Page not found · Andile Jaden Mbele</title><link rel="stylesheet" href="/styles.css"><main class="page intro"><h1>Page not found.</h1><p class="about">Try the <a href="/">homepage</a> or <a href="/blog/">writing archive</a>.</p></main><div class="page">${renderFooter()}</div></html>`);
 console.log('Exported public portfolio and blog to '+fileURLToPath(out));
-
