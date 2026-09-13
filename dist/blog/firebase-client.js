@@ -3,8 +3,20 @@ import {parseBackup} from './backup.js';
 import {initializeApp} from 'firebase/app';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,browserSessionPersistence,setPersistence} from 'firebase/auth';
 import {getFirestore,collection,doc,getDocs,query,where,runTransaction,deleteDoc} from 'firebase/firestore';
-import config from '../../config/firebase.json';
-import allowedEmails from '../../config/admins.json';
+/**
+ * Firebase web values are injected by esbuild from .env at `npm run build:sites`.
+ * They still ship in the public CMS bundle; restrict authorized domains in Firebase.
+ */
+const config={
+ apiKey:process.env.FIREBASE_API_KEY,
+ authDomain:process.env.FIREBASE_AUTH_DOMAIN,
+ projectId:process.env.FIREBASE_PROJECT_ID,
+ appId:process.env.FIREBASE_APP_ID,
+ messagingSenderId:process.env.FIREBASE_MESSAGING_SENDER_ID,
+};
+if(!config.apiKey||!config.authDomain||!config.projectId||!config.appId)throw Error('Firebase web config was not injected at build time.');
+const allowedEmails=String(process.env.CMS_ADMIN_EMAILS||'').split(',').map(email=>email.trim().toLowerCase()).filter(Boolean);
+if(!allowedEmails.length)throw Error('CMS admin allowlist was not injected at build time.');
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);
 await setPersistence(auth,browserSessionPersistence);
 await auth.authStateReady();

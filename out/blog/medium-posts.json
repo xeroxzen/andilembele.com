@@ -1,0 +1,139 @@
+[
+  {
+    "title": "Your Database Is Keeping Promises You Didn’t Make",
+    "date": "2026-08-22",
+    "tags": [
+      "database",
+      "software-engineering",
+      "rust",
+      "postgresql",
+      "distributed-systems"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/your-database-is-keeping-promises-you-didnt-make-b1f5f3540a97",
+    "source": "Medium"
+  },
+  {
+    "title": "The Person Who Knows What to Do",
+    "date": "2026-04-28",
+    "tags": [
+      "software-engineering",
+      "digital-forensics",
+      "postgresql",
+      "data-analysis",
+      "data"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/the-person-who-knows-what-to-do-a9ff571feb45",
+    "source": "Medium"
+  },
+  {
+    "title": "I Programmatically Reclaimed 23GB on My Mac Without Losing Anything",
+    "date": "2026-03-08",
+    "tags": [
+      "storage-solutions",
+      "programming"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/i-programmatically-reclaimed-23gb-on-my-mac-without-losing-anything-630faed77f62",
+    "source": "Medium"
+  },
+  {
+    "title": "How We Cut Checkout Latency by Removing a Live API Call from the Hot Path",
+    "date": "2026-02-27",
+    "tags": [
+      "performance-optimization",
+      "systems-thinking",
+      "software-architecture",
+      "software-development",
+      "multitenancy"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/how-we-cut-checkout-latency-by-removing-a-live-api-call-from-the-hot-path-1c2d1c316a95",
+    "source": "Medium"
+  },
+  {
+    "title": "When 20 API Calls Became Two - and Everything Got Faster",
+    "date": "2025-10-28",
+    "tags": [
+      "api-design",
+      "scalability",
+      "software-architecture",
+      "software-engineering",
+      "performance-optimization"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/when-20-api-calls-became-two-and-everything-got-faster-2ebc1a797e25",
+    "source": "Medium"
+  },
+  {
+    "title": "The Work We Invent",
+    "date": "2025-07-17",
+    "tags": [
+      "software-development",
+      "productivity",
+      "work-ethic",
+      "ai",
+      "software-engineering"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/the-work-we-invent-4112ea0c9eef",
+    "source": "Medium"
+  },
+  {
+    "title": "A Voice Note Search Tool Inspired by WhatsApp’s Limitations",
+    "date": "2025-05-19",
+    "tags": [
+      "whatsapp",
+      "customer-experience",
+      "nlp",
+      "audio-analytics",
+      "ai"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/a-voice-note-search-tool-inspired-by-whatsapps-limitations-86761ed5890f",
+    "source": "Medium"
+  },
+  {
+    "title": "The Fast-Talker Theory of Playback Speed",
+    "date": "2025-05-01",
+    "tags": [
+      "audio-engineering",
+      "cognitive-science",
+      "linear-algebra",
+      "software-engineering",
+      "phase-vocoder"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/the-fast-talker-theory-of-playback-speed-b56d88617799",
+    "source": "Medium"
+  },
+  {
+    "title": "Messy vCards with Pure Python, Pandas and Polars",
+    "date": "2025-04-29",
+    "tags": [
+      "pandas-dataframe",
+      "data-engineering",
+      "data-cleaning",
+      "python",
+      "polars-dataframe"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/messy-vcards-with-pure-python-pandas-and-polars-c93f92debea5",
+    "source": "Medium"
+  },
+  {
+    "title": "Three Weeks of ChatInsight in the Wild",
+    "date": "2025-03-28",
+    "tags": [
+      "data",
+      "programming",
+      "tech-support",
+      "build-in-public",
+      "kubernetes"
+    ],
+    "excerpt": "",
+    "url": "https://medium.com/@andilembele/three-weeks-of-chatinsight-in-the-wild-81a0c88445ad",
+    "source": "Medium"
+  }
+]

@@ -2,8 +2,38 @@
 import json, os, subprocess, urllib.request
 from pathlib import Path
 from datetime import datetime, timezone
-PROJECT='andile-portfolio-personal'
-ACCOUNT='thabheloduve@gmail.com'
+
+MAX_ENV_LINES = 200
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_dotenv(path):
+    """Load KEY=value pairs from .env without overwriting existing process env."""
+    if not path.is_file():
+        raise SystemExit('Missing .env; copy .env.example and fill Firebase credentials.')
+    lines = path.read_text().splitlines()
+    limit = min(len(lines), MAX_ENV_LINES)
+    for index in range(limit):
+        line = lines[index].strip()
+        if not line or line.startswith('#'):
+            continue
+        assignment = line[7:].strip() if line.startswith('export ') else line
+        separator = assignment.find('=')
+        if separator < 1:
+            continue
+        key = assignment[:separator].strip()
+        value = assignment[separator + 1:].strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+load_dotenv(ROOT / '.env')
+PROJECT = os.environ.get('FIREBASE_PROJECT_ID', '').strip()
+ACCOUNT = os.environ.get('FIRESTORE_BACKUP_ACCOUNT', '').strip()
+if not PROJECT or not ACCOUNT:
+    raise SystemExit('FIREBASE_PROJECT_ID and FIRESTORE_BACKUP_ACCOUNT must be set in .env')
+
 token=subprocess.check_output(['gcloud','auth','print-access-token','--account='+ACCOUNT],text=True).strip()
 url=f'https://firestore.googleapis.com/v1/projects/{PROJECT}/databases/(default)/documents/posts?pageSize=1000'
 posts=[]

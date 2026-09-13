@@ -4,6 +4,8 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import path from 'node:path';
 import {randomUUID,randomBytes,scryptSync,timingSafeEqual} from 'node:crypto';
 import {createStore} from './lib/store.mjs';
+import {loadEnv} from './lib/env.mjs';
+loadEnv();
 const root=fileURLToPath(new URL('./dist/',import.meta.url));
 export function createHandler({directory=fileURLToPath(new URL('./data/',import.meta.url)),port=4173,password=process.env.CMS_ADMIN_PASSWORD}={}){
 const data=directory;

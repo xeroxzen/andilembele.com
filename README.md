@@ -27,9 +27,9 @@ The editor supports Markdown, previews, draft visibility, tags, covers, image up
 
 ## Production setup
 
-`npm run build:sites` builds the production Firebase CMS into `out`. `/admin/` uses Google OAuth and Firestore rules. `npm start` is a separate local-only CMS and must never be exposed publicly. Custom-domain connection, cloud image storage and backups remain outstanding.
+Copy `.env.example` to `.env` and fill Firebase credentials, `SITE_URL`, and `CMS_ADMIN_EMAILS`. `npm run build:sites` reads that file, injects the web config into the production CMS bundle, and writes `out`. `/admin/` uses Google OAuth and Firestore rules generated from `CMS_ADMIN_EMAILS`. `npm start` is a separate local-only CMS and must never be exposed publicly. Set `CMS_ADMIN_PASSWORD` (12+ characters) before using the local editor. Custom-domain connection, cloud image storage and backups remain outstanding.
 
-No cloud credentials or deployed services are included.
+`.env` is gitignored. Firebase web keys still appear in the public CMS JavaScript after build; restrict authorized domains in the Firebase console.
 
 ## Checks
 

@@ -1,10 +1,14 @@
-// Public origin is configurable when the site moves to Andile's domain.
-const origin = (process.env.SITE_URL || 'https://andilejadenmbele.thabhelo-duve.chatgpt.site').replace(/\/$/, '');
-const escape = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+import {requireEnv} from '../lib/env.mjs';
+
+/**
+ * Open Graph and Twitter tags for the public origin in SITE_URL.
+ */
 export function renderSocialMeta({blog = false} = {}) {
+  const origin = requireEnv('SITE_URL').replace(/\/$/, '');
   const title = blog ? 'Writing · Andile Jaden Mbele' : 'Andile Jaden Mbele · Systems Engineer';
   const description = blog ? 'Writing on software, infrastructure, and data.' : 'Principal Engineer. Backend, infrastructure, data & DevOps.';
   const image = origin + '/assets/andile-opengraph.png';
+  const escape = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
   return `<meta property="og:type" content="website">
 <meta property="og:site_name" content="Andile Jaden Mbele">
 <meta property="og:title" content="${escape(title)}">

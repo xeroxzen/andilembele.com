@@ -5,19 +5,22 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initializeTestEnvironment,assertFails,assertSucceeds} from '@firebase/rules-unit-testing';
 import {doc,setDoc,getDoc,getDocs,deleteDoc,collection,query,where} from 'firebase/firestore';
+import {adminEmails} from '../lib/env.mjs';
+const emails=adminEmails();
+assert.ok(emails.length>=2,'CMS_ADMIN_EMAILS needs two addresses for the dual-admin rules test');
 const env=await initializeTestEnvironment({projectId:'demo-andile-cms',firestore:{host:'127.0.0.1',port:8088,rules:await readFile(new URL('./firestore.rules',import.meta.url),'utf8')}});
 const post={title:'Test',slug:'test',excerpt:'',content:'Private text',date:'2026-09-13',coverImage:'',tags:['Systems'],status:'draft'};
 function user(email,verified=true,provider='google.com'){return env.authenticatedContext(email,{email,email_verified:verified,firebase:{sign_in_provider:provider}}).firestore();}
 test('only both verified Google administrators can manage posts; public sees published only',async()=>{
  try{
-  const owner=user('thabheloduve@gmail.com'),andile=user('andilembele020@gmail.com'),stranger=user('visitor@example.com'),anonymous=env.unauthenticatedContext().firestore();
+  const owner=user(emails[0]),andile=user(emails[1]),stranger=user('visitor@example.com'),anonymous=env.unauthenticatedContext().firestore();
   await assertSucceeds(setDoc(doc(owner,'posts/test'),post));
   await assertSucceeds(getDoc(doc(andile,'posts/test')));
   await assertFails(getDoc(doc(stranger,'posts/test')));await assertFails(getDoc(doc(anonymous,'posts/test')));
   await assertFails(getDocs(collection(stranger,'posts')));
   await assertFails(setDoc(doc(stranger,'posts/test'),{...post,status:'published'}));
-  await assertFails(setDoc(doc(user('thabheloduve@gmail.com',false),'posts/test'),post));
-  await assertFails(setDoc(doc(user('thabheloduve@gmail.com',true,'password'),'posts/test'),post));
+  await assertFails(setDoc(doc(user(emails[0],false),'posts/test'),post));
+  await assertFails(setDoc(doc(user(emails[0],true,'password'),'posts/test'),post));
   await assertFails(setDoc(doc(owner,'posts/test'),{...post,admin:true}));
   await assertFails(setDoc(doc(owner,'posts/test'),{...post,tags:[{}]}));
   await assertFails(setDoc(doc(owner,'posts/test'),{...post,slug:'different'}));

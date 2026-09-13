@@ -2,6 +2,9 @@ import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {renderFooter} from '../components/footer.mjs';
 import {fileURLToPath} from 'node:url';
+import {esbuildDefines, firebaseConfig, loadEnv} from '../lib/env.mjs';
+loadEnv();
+firebaseConfig();
 const root=new URL('../',import.meta.url);
 const source=new URL('dist/',root),out=new URL('out/',root);
 await rm(out,{recursive:true,force:true});
@@ -16,7 +19,7 @@ await writeFile(new URL('index.html',out),home);
 const blog=(await readFile(new URL('blog/index.html',source),'utf8')).replace('<body>','<body data-cms="firebase">').replace('src="/blog/app.js"','src="/blog/cloud-app.js"');
 await writeFile(new URL('blog/index.html',out),blog);
 await cp(new URL('blog/medium-posts.json',source),new URL('blog/medium-posts.json',out));
-await build({entryPoints:[fileURLToPath(new URL('blog/app.js',source))],outfile:fileURLToPath(new URL('blog/cloud-app.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true});
+await build({entryPoints:[fileURLToPath(new URL('blog/app.js',source))],outfile:fileURLToPath(new URL('blog/cloud-app.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,define:esbuildDefines()});
 for(const route of ['admin','admin/posts','blog/admin']){
  await mkdir(new URL(route+'/',out),{recursive:true});
  await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(/<main id="app">[\s\S]*?<\/main>/,'<main id="app"><section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section></main>'));
