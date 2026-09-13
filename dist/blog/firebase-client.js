@@ -1,3 +1,5 @@
+import {restorePosts} from './restore.js';
+import {parseBackup} from './backup.js';
 import {initializeApp} from 'firebase/app';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,browserSessionPersistence,setPersistence} from 'firebase/auth';
 import {getFirestore,collection,doc,getDocs,query,where,runTransaction,deleteDoc} from 'firebase/firestore';
@@ -21,6 +23,10 @@ export async function request(url,options={}){
  if(url==='/api/session')return {mode:'firebase',token:'',passwordProtected:true,email:auth.currentUser.email};
  if(url==='/api/logout'){await logout();return {ok:true};}
  if(url==='/api/admin/posts'&&method==='GET')return (await getDocs(collection(db,'posts'))).docs.map(d=>d.data());
+ if(url==='/api/admin/restore'&&method==='POST'){
+  const posts=parseBackup(options.body);
+  await restorePosts(db,posts);return {count:posts.length};
+ }
  if(url==='/api/admin/media')throw Error('Image uploads are not enabled yet. Text posts can be published now.');
  if(url.startsWith('/api/admin/posts/')&&method==='DELETE'){await deleteDoc(doc(db,'posts',decodeURIComponent(url.split('/').pop())));return {ok:true};}
  if(url==='/api/admin/posts'&&method==='POST'){

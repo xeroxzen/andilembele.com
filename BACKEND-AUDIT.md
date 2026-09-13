@@ -9,7 +9,9 @@ Production builds connect directly to Firebase Authentication and Firestore in `
 - Firestore Standard database is in Johannesburg (`africa-south1`), with deletion protection. Billing is disabled.
 - Image uploads are disabled in the production editor. Local uploads remain local.
 - Profile, experience, projects and talks remain authored in templates. Medium is a metadata snapshot refreshed manually. Contact uses mailto.
-- No scheduled backups, restore verification, monitoring or automatic Medium refresh is configured.
+- Daily private local snapshots and Sunday Medium refresh are scheduled through Codex on this Mac. The first snapshot contained zero posts. This requires the Mac and its authorized login; independent cloud backups and monitoring remain unconfigured.
+- Restore imports up to 100 text posts as drafts, refuses existing slugs atomically, and validates metadata. Round-trip and collision tests use the Firestore emulator, not a production browser session.
+- Both custom domains are registered pending DNS validation. DNS and email routing are unchanged; exact records are in DOMAIN-SETUP.md.
 
 Verification: seven application tests passed; Firestore emulator tests passed for both allowed accounts, unauthorized accounts, unverified email, wrong identity provider, draft privacy and schema validation. Live anonymous published queries succeeded; unrestricted queries were denied. A real Google popup login and complete browser publication cycle still require verification; the embedded browser closed its popup.
 

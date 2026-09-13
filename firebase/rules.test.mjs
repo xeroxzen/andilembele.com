@@ -1,4 +1,6 @@
 import {test} from 'node:test';
+import {restorePosts} from '../dist/blog/restore.js';
+import {parseBackup} from '../dist/blog/backup.js';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {initializeTestEnvironment,assertFails,assertSucceeds} from '@firebase/rules-unit-testing';
@@ -26,6 +28,13 @@ test('only both verified Google administrators can manage posts; public sees pub
   await assertFails(getDocs(collection(anonymous,'posts')));
   await assertFails(deleteDoc(doc(stranger,'posts/test')));
   await assertSucceeds(deleteDoc(doc(andile,'posts/test')));
+  const exported=JSON.stringify([{...post,status:'published'}]);
+  await restorePosts(owner,parseBackup(exported));
+  assert.deepEqual((await getDoc(doc(owner,'posts/test'))).data(),post);
+  await assertFails(getDoc(doc(anonymous,'posts/test')));
+  await assert.rejects(restorePosts(owner,[{...post,slug:'new-post'},post]));
+  assert.equal((await getDoc(doc(owner,'posts/new-post'))).exists(),false);
+  await deleteDoc(doc(owner,'posts/test'));
   await assertFails(setDoc(doc(owner,'settings/admins'),{emails:['visitor@example.com']}));
  }finally{await env.cleanup();}
 });

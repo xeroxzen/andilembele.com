@@ -13,7 +13,7 @@ Testing: `npm test`; `npm run test:rules` requires Firebase CLI and Java for the
 
 Authorized domains include localhost, 127.0.0.1, the Firebase domains and andilejadenmbele.thabhelo-duve.chatgpt.site. Add the final custom domain to Firebase Authentication before its DNS cutover.
 
-Image uploads are disabled pending separately approved storage/billing work. Do not attach billing implicitly. No scheduled backups exist: export posts manually and plan a restore test.
+Image uploads are disabled pending separately approved storage/billing work. Do not attach billing implicitly. Daily private snapshots are scheduled on this Mac via scripts/backup-firestore.py. Keep backups private and outside Git. The editor restores text backups of up to 100 posts as drafts, refusing overwrites; larger snapshots need a reviewed batch restore. Local machine availability and Google authorization are required.
 
 ## Handover
 
