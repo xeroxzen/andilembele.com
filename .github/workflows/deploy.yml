@@ -100,5 +100,7 @@ jobs:
       - name: Verify production
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --retry 5 --retry-all-errors "$DEPLOY_URL" \
-            | grep -Fq "Andile Jaden Mbele"
+          smoke_file=$(mktemp)
+          curl --fail --silent --show-error --retry 5 --retry-all-errors \
+            --output "$smoke_file" "$DEPLOY_URL"
+          grep -Fq "Andile Jaden Mbele" "$smoke_file"
