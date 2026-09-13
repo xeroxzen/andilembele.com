@@ -43,8 +43,17 @@ Andile already controls his domain. Have him sign in to its registrar/DNS provid
 
 The automated request-handler tests pass for save/reload persistence, duplicate slugs, slug renaming, draft exclusion, same-origin token checks, invalid/valid image handling, private data paths, and Markdown HTML/URL safety. The tests invoke the HTTP handler directly without listening on a port.
 
-This session's permissions blocked starting an updated local server, so the new editor has not yet had a live browser walkthrough. An older static preview may still be running on port 4173. Stop that preview first, then run `npm start` from this folder and open `/blog/admin`. The new server prints Home, Blog, and Local CMS addresses. Test a draft, preview it, change it to Visible locally, and confirm it appears on `/blog`; return it to Draft to hide it again.
+Run `npm start` from this folder and open `/admin`. Restart an older server first if needed. The new server prints Home, Blog, and Local CMS addresses. Test a draft, preview it, change it to Visible locally, and confirm it appears on `/blog`; return it to Draft to hide it again.
 
 ## Finished blog interface
 
 The public blog now has a featured article, a year archive, search, topic/source filters, URL-preserved filters, and incremental browsing. Native reading pages include a table of contents for longer posts, copy-link control, and more-writing links. `npm run build` regenerates a readable HTML fallback and an interactive `/blog-preview.html` for static previews. The preview contains only public Medium metadata, not CMS content. The updated server remains required for native article routes and the editor. Public preview search and archive expansion were verified in a browser; starting the updated CMS server was still blocked by session permissions.
+
+
+## Admin workspace
+
+`/admin` is the local dashboard. `/admin/posts` opens the editor; `/blog/admin` remains compatible. It supports drafts, local visibility, previews, cover/inline images, Markdown import/export, full post export, recovery, and deletion with confirmation. The dashboard reports post and draft counts.
+
+The Node server remains bound to loopback and rejects other Host headers. Set `CMS_ADMIN_PASSWORD` (at least 12 characters) in the server environment to enable password sign-in. Passwords are compared using scrypt; sessions use HttpOnly SameSite cookies, expire after 30 minutes of inactivity, and are invalidated at logout. Restarting invalidates all sessions. Login attempts are rate limited. Without a password, access relies on the local-computer boundary. Do not expose this server to the internet.
+
+The public `/admin` is an honest setup page, with no login form or privileged API. Before enabling remote administration, have Andile sign in to his own chosen hosting/auth/storage providers. Add server-enforced owner authorization, HTTPS Secure session cookies, durable sessions and rate limits, persistent post/media storage, backups, password recovery, and a production publication workflow. Test anonymous access, unauthorized accounts, session expiry, draft privacy, upload validation, and backup/restore before enabling online writes. No existing third-party infrastructure or credentials are reused.
