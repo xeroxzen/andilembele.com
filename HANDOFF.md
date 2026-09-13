@@ -1,6 +1,6 @@
 # Owner handoff
 
-Read FIREBASE-SETUP.md for the production CMS and BACKEND-AUDIT.md for verified results and remaining limitations. START-HERE.md contains the complete owner setup prompt.
+Read FIREBASE-SETUP.md for the production CMS and BACKEND-AUDIT.md for verified results and remaining limitations.
 
 Open `/admin/` and continue with Google using an allowed account. Create a draft, preview it, and publish when ready. Published text posts appear immediately in `/blog/`; use export for a manual backup. Images are disabled pending storage setup. Google Cloud ownership is separate from editor access.
 
