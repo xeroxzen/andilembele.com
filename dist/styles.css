@@ -79,3 +79,5 @@ a.project:hover{background:#f4f9ec}
 .personal-note{display:flex;gap:17px;align-items:center;margin-top:26px;color:var(--muted)}.personal-note p{font-size:14px;line-height:1.7}.ascii-rocket{margin:0;color:var(--accent);font:12px/1.15 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;flex-shrink:0}
 .experience-list .job:first-child::after{background:var(--signal)}
 @media(max-width:640px){.identity{align-items:flex-start;gap:15px}.portrait{width:66px;height:66px}.identity .eyebrow{font-size:12px;line-height:1.5;margin-bottom:7px}.identity h1{font-size:28px}.personal-note{margin-top:22px}}
+
+footer{flex-wrap:wrap;align-items:center;gap:14px 24px}.social-links{display:flex;flex-wrap:wrap;gap:10px 20px}.social-links a:hover{text-decoration:underline}
