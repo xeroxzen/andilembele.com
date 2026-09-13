@@ -6,7 +6,7 @@ import {requireEnv} from '../lib/env.mjs';
 export function renderSocialMeta({blog = false} = {}) {
   const origin = requireEnv('SITE_URL').replace(/\/$/, '');
   const title = blog ? 'Writing · Andile Jaden Mbele' : 'Andile Jaden Mbele · Systems Engineer';
-  const description = blog ? 'Writing on software, infrastructure, and data.' : 'Principal Engineer. Backend, infrastructure, data & DevOps.';
+  const description = blog ? 'Writing on software, infrastructure, and data.' : 'Principal Engineer operating a four-region AWS platform and building internal systems that multiply engineering teams.';
   const image = origin + '/assets/andile-opengraph.png';
   const escape = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
   return `<meta property="og:type" content="website">
