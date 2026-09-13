@@ -8,8 +8,8 @@ A minimal personal website with a responsive experience timeline, selected proje
 Requires Node.js 20 or newer. There are no package dependencies. Run `npm run build` after changing blog layout or Medium metadata.
 
 ```sh
-git clone https://github.com/Thabhelo/andile.git
-cd andile
+git clone https://github.com/xeroxzen/andilembele.com.git
+cd andilembele.com
 npm start
 ```
 
@@ -30,6 +30,8 @@ The editor supports Markdown, previews, draft visibility, tags, covers, image up
 Copy `.env.example` to `.env` and fill Firebase credentials, `SITE_URL`, and `CMS_ADMIN_EMAILS`. `npm run build:sites` reads that file, injects the web config into the production CMS bundle, and writes `out`. `/admin/` uses Google OAuth and Firestore rules generated from `CMS_ADMIN_EMAILS`. `npm start` is a separate local-only CMS and must never be exposed publicly. Set `CMS_ADMIN_PASSWORD` (12+ characters) before using the local editor. Custom-domain connection, cloud image storage and backups remain outstanding.
 
 `.env` is gitignored. Firebase web keys still appear in the public CMS JavaScript after build; restrict authorized domains in the Firebase console.
+
+Production delivery is handled by the gated GitHub Actions workflow in `.github/workflows/deploy.yml`. See [`docs/deployment.md`](docs/deployment.md) for the one-time server setup, repository settings, and release layout.
 
 ## Checks
 
