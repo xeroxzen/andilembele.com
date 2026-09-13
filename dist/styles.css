@@ -83,4 +83,6 @@ a.project:hover{background:#efffef}
 footer{flex-wrap:wrap;align-items:center;gap:14px 24px}.social-links{display:flex;flex-wrap:wrap;gap:10px 20px}.social-links a:hover{text-decoration:underline}
 
 /* Terminal-green decoration, with darker green for text on light surfaces. */
-.ascii-rocket{color:var(--signal);background:#101710;padding:9px 11px;border-radius:4px}
+.ascii-rocket{color:var(--accent);background:none;padding:0}
+
+.tool-group+.tool-group{margin-top:24px}.tool-group h3{font-size:12px;font-weight:450;color:var(--muted);margin-bottom:12px}.tool-list{display:flex;flex-wrap:wrap;gap:14px 24px;list-style:none;margin:0;padding:0}.tool-list li{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink)}.tool-list img{object-fit:contain;flex-shrink:0}.social-links a{display:inline-flex;align-items:center;gap:6px}.social-links img{object-fit:contain;opacity:.75}.social-links a:hover img{opacity:1}
