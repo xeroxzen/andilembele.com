@@ -1,6 +1,6 @@
 # Andile Jaden Mbele
 
-Production Google OAuth and Firestore CMS are configured. See FIREBASE-SETUP.md for setup and BACKEND-AUDIT.md for verification and remaining limitations.
+Production Google OAuth and Firestore CMS are configured.
 A minimal personal website with a responsive experience timeline, selected projects, entrepreneurship, talks, and a local blog/CMS.
 
 ## Run locally
@@ -29,7 +29,7 @@ The editor supports Markdown, previews, draft visibility, tags, covers, image up
 
 `npm run build:sites` builds the production Firebase CMS into `out`. `/admin/` uses Google OAuth and Firestore rules. `npm start` is a separate local-only CMS and must never be exposed publicly. Custom-domain connection, cloud image storage and backups remain outstanding.
 
-Read [HANDOFF.md](HANDOFF.md) before configuring the backend or deploying. No cloud credentials or deployed services are included.
+No cloud credentials or deployed services are included.
 
 ## Checks
 
