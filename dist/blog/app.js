@@ -16,9 +16,9 @@ async function publicPage(){
  const posts=visiblePosts([...native,...external]);
  if(slug){
   const post=native.find(p=>p.slug===slug);
-  if(!post){document.title='Post not found · Andile Jaden Mbele';app.innerHTML='<section class="blog-head"><h1>Post not found.</h1><p>This post is unavailable.</p><a href="/blog">Back to writing</a></section>';return;}
+  if(!post){document.title='Post not found · Andile Jaden Mbele';app.innerHTML='<section class="blog-head"><h1>Post not found.</h1><p>This post is unavailable.</p><a href="/writing">Back to writing</a></section>';return;}
   document.title=`${post.title} · Andile Jaden Mbele`;
-  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div><nav id="related" aria-label="More writing"></nav></section>`;
+  app.innerHTML=`<section class="article"><a class="back-home" href="/writing">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div><nav id="related" aria-label="More writing"></nav></section>`;
   document.querySelector('meta[name="description"]').content=post.excerpt;
   const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
   if(headings.length>2){const contents=document.createElement('details');contents.className='article-contents';contents.innerHTML='<summary>In this article</summary><ol>'+headings.map((h,i)=>{h.id='section-'+(i+1);return `<li><a href="#${h.id}">${e(h.textContent)}</a></li>`;}).join('')+'</ol>';app.querySelector('.prose').before(contents);}

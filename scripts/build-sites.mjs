@@ -1,0 +1,23 @@
+import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const root=new URL('../',import.meta.url);
+const source=new URL('dist/',root),out=new URL('out/',root);
+await rm(out,{recursive:true,force:true});
+await mkdir(new URL('blog/',out),{recursive:true});
+await mkdir(new URL('writing/',out),{recursive:true});
+await cp(new URL('assets/',source),new URL('assets/',out),{recursive:true});
+await cp(new URL('styles.css',source),new URL('styles.css',out));
+await cp(new URL('blog/blog.css',source),new URL('blog/blog.css',out));
+let home=await readFile(new URL('index.html',source),'utf8');
+home=home.replace('href="styles.css"','href="/styles.css?v=terminal-green-2"');
+await writeFile(new URL('index.html',out),home);
+// Export only public writing. The local editor and data store are not deployed.
+const preview=await readFile(new URL('blog-preview.html',source),'utf8');
+const match=preview.match(/<script type="module">([\s\S]*?)<\/script>/);
+if(!match)throw Error('Run npm run build before exporting Sites assets');
+const blog=preview.replace(match[0],'<script type="module" src="/blog/public.js"></script>').replaceAll('/blog-preview.html','/writing/').replace('href="/styles.css"','href="/styles.css?v=terminal-green-2"');
+await writeFile(new URL('blog/index.html',out),blog);
+await writeFile(new URL('writing/index.html',out),blog);
+await writeFile(new URL('blog/public.js',out),match[1]);
+await writeFile(new URL('404.html',out),'<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Page not found · Andile Jaden Mbele</title><link rel="stylesheet" href="/styles.css"><main class="page intro"><h1>Page not found.</h1><p class="about">Try the <a href="/">homepage</a> or <a href="/writing/">writing archive</a>.</p></main></html>');
+console.log('Exported public portfolio and blog to '+fileURLToPath(out));
