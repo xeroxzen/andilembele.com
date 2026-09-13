@@ -47,3 +47,7 @@ Third-party license notices are retained in `licenses/`.
 ## Blog preview and build
 
 `npm run build` regenerates the public blog fallback and `dist/blog-preview.html`. The latter is an interactive preview of public Medium metadata that works on a basic static server, without the CMS. It includes no drafts or saved local posts. Open `/blog-preview.html` on the existing preview server; use `/blog` and `/blog/admin` when running `npm start`. `npm run sync:medium` refreshes public metadata and rebuilds the blog. The normal blog has readable article links even before JavaScript loads.
+
+## Shared page components
+
+Edit `components/footer.mjs` for footer markup and all footer social links. It is rendered at build time into every page, so it works without browser JavaScript. Edit `templates/home.html` and `templates/blog.html` for page layout; keep their `{{footer}}` placeholder. The blog template also uses `{{content}}`. Files in `dist/` and `out/` generated from these templates are build outputs; do not edit their footer copies. Run `npm run build:sites` to regenerate the full public site. `npm start` and `npm run dev` regenerate local pages first.
