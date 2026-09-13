@@ -6,7 +6,7 @@ export function visiblePosts(posts,{query='',topic='',source=''}={}){
  return posts.filter(p=>(!topic||p.tags.includes(topic))&&(!source||(p.source||'Journal')===source)&&words.every(w=>[p.title,p.excerpt,...p.tags].join(' ').toLowerCase().includes(w))).sort((a,b)=>b.date.localeCompare(a.date));
 }
 export function postLink(p){
- if(p.source!=='Medium')return '/blog/'+encodeURIComponent(p.slug);
+ if(p.source!=='Medium')return '/blog/?post='+encodeURIComponent(p.slug);
  try{const url=new URL(p.url);return url.protocol==='https:'&&url.hostname==='medium.com'?url.href:'https://medium.com/@andilembele';}catch{return 'https://medium.com/@andilembele';}
 }
 export function postCard(p,featured=false){return `<article class="${featured?'featured-post':'archive-post'}"><div class="post-date"><time datetime="${e(p.date)}">${dateLabel(p.date)}</time><span>${p.source==='Medium'?'Medium':'Journal'}</span></div><div><${featured?'h2':'h3'}><a href="${e(postLink(p))}">${e(p.title)} <span class="post-arrow" aria-hidden="true">${p.source==='Medium'?'↗':'→'}</span></a></${featured?'h2':'h3'}>${p.excerpt?`<p class="post-excerpt">${e(p.excerpt)}</p>`:''}<p class="post-topics">${p.tags.slice(0,3).map(t=>e(topicLabel(t))).join(' / ')}</p></div></article>`;}

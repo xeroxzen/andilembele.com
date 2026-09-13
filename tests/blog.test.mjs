@@ -17,7 +17,7 @@ test('article rendering escapes untrusted metadata and restricts external links'
  assert.ok(!postCard(p).includes('<script>'));
  assert.equal(postLink(p),'https://medium.com/@andilembele');
  assert.equal(postLink({...p,url:'https://medium.com.evil.test/'}),'https://medium.com/@andilembele');
- assert.equal(postLink({slug:'native'}),'/blog/native');
+ assert.equal(postLink({slug:'native'}),'/blog/?post=native');
 });
 test('built fallback includes real article links without needing JavaScript',async()=>{
  const html=await readFile(new URL('../dist/blog/index.html',import.meta.url),'utf8');

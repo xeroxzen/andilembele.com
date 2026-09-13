@@ -42,7 +42,7 @@ function visiblePosts(posts,{query='',topic='',source=''}={}){
  return posts.filter(p=>(!topic||p.tags.includes(topic))&&(!source||(p.source||'Journal')===source)&&words.every(w=>[p.title,p.excerpt,...p.tags].join(' ').toLowerCase().includes(w))).sort((a,b)=>b.date.localeCompare(a.date));
 }
 function postLink(p){
- if(p.source!=='Medium')return '/blog/'+encodeURIComponent(p.slug);
+ if(p.source!=='Medium')return '/blog/?post='+encodeURIComponent(p.slug);
  try{const url=new URL(p.url);return url.protocol==='https:'&&url.hostname==='medium.com'?url.href:'https://medium.com/@andilembele';}catch{return 'https://medium.com/@andilembele';}
 }
 function postCard(p,featured=false){return `<article class="${featured?'featured-post':'archive-post'}"><div class="post-date"><time datetime="${e(p.date)}">${dateLabel(p.date)}</time><span>${p.source==='Medium'?'Medium':'Journal'}</span></div><div><${featured?'h2':'h3'}><a href="${e(postLink(p))}">${e(p.title)} <span class="post-arrow" aria-hidden="true">${p.source==='Medium'?'↗':'→'}</span></a></${featured?'h2':'h3'}>${p.excerpt?`<p class="post-excerpt">${e(p.excerpt)}</p>`:''}<p class="post-topics">${p.tags.slice(0,3).map(t=>e(topicLabel(t))).join(' / ')}</p></div></article>`;}
@@ -51,13 +51,17 @@ function indexMarkup(posts){const sorted=visiblePosts(posts);return `<section cl
 
 const e=escapeHTML;
 const app=document.querySelector('#app');
+const remote=document.body.dataset.cms==='firebase';
+const cloud=null;
+const recoveryStorage=remote?sessionStorage:localStorage;
+const recoveryKey=()=>remote?cloud.recoveryKey():'andile-editor-recovery';
 const reading=p=>`${Math.max(1,Math.ceil(p.content.trim().split(/\s+/).length/200))} min read`;
-async function api(url,options){const r=await fetch(url,options);const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
+async function api(url,options){if(remote&&url.startsWith('/api/'))return cloud.request(url,options);const r=await fetch(url,options);const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
 const meta=p=>`${e(dateLabel(p.date))} · ${p.source==='Medium'?'Medium':reading(p)}${p.tags.length?' · '+p.tags.map(e).join(', '):''}`;
 function article(p){return `${p.coverImage?`<img class="cover" src="${e(p.coverImage)}" alt="">`:''}<p class="eyebrow">${meta(p)}</p><h1>${e(p.title)}</h1>${p.excerpt?`<p class="lead">${e(p.excerpt)}</p>`:''}<div class="prose">${markdown(p.content)}</div>`;}
 async function publicPage(){
  const preview=document.body.dataset.preview==='true';
- const slug=preview?'':location.pathname.split('/')[2];
+ const slug=preview?'':new URLSearchParams(location.search).get('post')||location.pathname.split('/')[2];
  const results=await Promise.allSettled(preview?[Promise.resolve([]),Promise.resolve(window.previewPosts)]:[api('/api/posts'),api('/blog/medium-posts.json')]);
  if(slug&&results[0].status==='rejected')throw results[0].reason;
  if(results.every(r=>r.status==='rejected'))throw Error('Writing is temporarily unavailable.');

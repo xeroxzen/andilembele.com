@@ -11,7 +11,16 @@
     "build:sites": "npm run build && node scripts/build-sites.mjs",
     "prestart": "npm run build",
     "predev": "npm run build",
-    "pretest": "npm run build:sites"
+    "pretest": "npm run build:sites",
+    "build:rules": "node scripts/build-rules.mjs",
+    "test:rules": "npm run build:rules && firebase emulators:exec --only firestore --project demo-andile-cms \"node --test firebase/rules.test.mjs\""
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "firebase": "^12.19.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "esbuild": "^0.28.2"
+  }
 }

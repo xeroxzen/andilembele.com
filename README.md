@@ -1,6 +1,6 @@
 # Andile Jaden Mbele
 
-Current backend status: Firebase project `andile-portfolio-personal` is registered under the temporary personal owner, without billing or an organization parent. Production CMS integration is still outstanding. See [FIREBASE-SETUP.md](FIREBASE-SETUP.md) and [BACKEND-AUDIT.md](BACKEND-AUDIT.md); older unconfigured-provider notes below describe the initial handoff.
+Production Google OAuth and Firestore CMS are configured. See FIREBASE-SETUP.md for setup and BACKEND-AUDIT.md for verification and remaining limitations.
 A minimal personal website with a responsive experience timeline, selected projects, entrepreneurship, talks, and a local blog/CMS.
 
 ## Run locally
@@ -27,7 +27,7 @@ The editor supports Markdown, previews, draft visibility, tags, covers, image up
 
 ## Production setup
 
-The CMS is local-only. It does not provide production authentication and must not be exposed through a tunnel or deployed as a public admin service. Hosting, authenticated administration, remote storage, and domain configuration remain to be set up under the owner's accounts.
+`npm run build:sites` builds the production Firebase CMS into `out`. `/admin/` uses Google OAuth and Firestore rules. `npm start` is a separate local-only CMS and must never be exposed publicly. Custom-domain connection, cloud image storage and backups remain outstanding.
 
 Read [HANDOFF.md](HANDOFF.md) before configuring the backend or deploying. No cloud credentials or deployed services are included.
 

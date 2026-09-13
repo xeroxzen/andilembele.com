@@ -1,0 +1,31 @@
+import {readFile,writeFile} from 'node:fs/promises';
+const emails=JSON.parse(await readFile(new URL('../config/admins.json',import.meta.url)));
+const text=`rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function admin() {
+   return request.auth != null && request.auth.token.email_verified == true
+    && request.auth.token.firebase.sign_in_provider == 'google.com'
+    && request.auth.token.email.lower() in ${JSON.stringify(emails)};
+  }
+  function valid(p, slug) {
+   return p.keys().hasAll(['title','slug','excerpt','content','date','coverImage','tags','status'])
+    && p.keys().hasOnly(['title','slug','excerpt','content','date','coverImage','tags','status'])
+    && p.slug == slug && p.slug is string && p.slug.size() <= 100 && p.slug.matches('[a-z0-9]+(-[a-z0-9]+)*')
+    && p.title is string && p.title.size() > 0 && p.title.size() <= 200
+    && p.content is string && p.content.size() > 0 && p.content.size() <= 200000
+    && p.excerpt is string && p.excerpt.size() <= 1000
+    && p.date is string && p.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+    && p.coverImage == '' && p.tags is list && p.tags.size() <= 10
+    && ${Array.from({length:10},(_,i)=>`(p.tags.size() <= ${i} || (p.tags[${i}] is string && p.tags[${i}].size() <= 40))`).join('\n    && ')}
+    && p.status in ['draft','published'];
+  }
+  match /posts/{slug} {
+   allow read: if admin() || resource.data.status == 'published';
+   allow create, update: if admin() && valid(request.resource.data, slug);
+   allow delete: if admin();
+  }
+ }
+}
+`;
+await writeFile(new URL('../firebase/firestore.rules',import.meta.url),text);

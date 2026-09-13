@@ -14,7 +14,7 @@ const strip=s=>s.replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
 let code=strip(await read('dist/blog/markdown.js'))+'\n'+strip(await read('dist/blog/listing.js'))+'\n'+strip(await read('dist/blog/app.js'));
 code=code.replace("const app=document.querySelector('#app');","const e=escapeHTML;\nconst app=document.querySelector('#app');");
 const editorStart=code.indexOf('async function editor()');
-code=code.slice(0,editorStart)+'\nawait publicPage();';
+code=code.slice(0,editorStart).replace("const cloud=remote?await import('./firebase-client.js'):null;","const cloud=null;")+'\nawait publicPage();';
 const preview=shell.replace('<body>','<body data-preview="true">').replace('<script type="module" src="/blog/app.js"></script>','').replaceAll('href="/blog"','href="/blog-preview.html"').replace('</body>',`<script type="module">window.previewPosts=${JSON.stringify(posts).replaceAll('<','\\u003c')};\n${code.replaceAll('</script','<\\/script')}</script></body>`);
 await writeFile(new URL('dist/blog-preview.html',root),preview);
 console.log(`Built blog index and static preview with ${posts.length} Medium articles.`);
