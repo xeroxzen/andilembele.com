@@ -44,3 +44,7 @@ Andile already controls his domain. Have him sign in to its registrar/DNS provid
 The automated request-handler tests pass for save/reload persistence, duplicate slugs, slug renaming, draft exclusion, same-origin token checks, invalid/valid image handling, private data paths, and Markdown HTML/URL safety. The tests invoke the HTTP handler directly without listening on a port.
 
 This session's permissions blocked starting an updated local server, so the new editor has not yet had a live browser walkthrough. An older static preview may still be running on port 4173. Stop that preview first, then run `npm start` from this folder and open `/blog/admin`. The new server prints Home, Blog, and Local CMS addresses. Test a draft, preview it, change it to Visible locally, and confirm it appears on `/blog`; return it to Draft to hide it again.
+
+## Finished blog interface
+
+The public blog now has a featured article, a year archive, search, topic/source filters, URL-preserved filters, and incremental browsing. Native reading pages include a table of contents for longer posts, copy-link control, and more-writing links. `npm run build` regenerates a readable HTML fallback and an interactive `/blog-preview.html` for static previews. The preview contains only public Medium metadata, not CMS content. The updated server remains required for native article routes and the editor. Public preview search and archive expansion were verified in a browser; starting the updated CMS server was still blocked by session permissions.

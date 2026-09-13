@@ -1,20 +1,45 @@
 import {markdown,escapeHTML as e,blogSnippets} from './markdown.js';
+import {indexMarkup,visiblePosts,archive,dateLabel} from './listing.js';
 const app=document.querySelector('#app');
 const reading=p=>`${Math.max(1,Math.ceil(p.content.trim().split(/\s+/).length/200))} min read`;
 async function api(url,options){const r=await fetch(url,options);const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
-const meta=p=>`${e(p.date)} · ${p.source==='Medium'?'Medium':reading(p)}${p.tags.length?' · '+p.tags.map(e).join(', '):''}`;
+const meta=p=>`${e(dateLabel(p.date))} · ${p.source==='Medium'?'Medium':reading(p)}${p.tags.length?' · '+p.tags.map(e).join(', '):''}`;
 function article(p){return `${p.coverImage?`<img class="cover" src="${e(p.coverImage)}" alt="">`:''}<p class="eyebrow">${meta(p)}</p><h1>${e(p.title)}</h1>${p.excerpt?`<p class="lead">${e(p.excerpt)}</p>`:''}<div class="prose">${markdown(p.content)}</div>`;}
-async function publicPage(){const slug=location.pathname.split('/')[2];
- const results=await Promise.allSettled([api('/api/posts'),api('/blog/medium-posts.json')]);
- if(slug && results[0].status==='rejected')throw results[0].reason;
+async function publicPage(){
+ const preview=document.body.dataset.preview==='true';
+ const slug=preview?'':location.pathname.split('/')[2];
+ const results=await Promise.allSettled(preview?[Promise.resolve([]),Promise.resolve(window.previewPosts)]:[api('/api/posts'),api('/blog/medium-posts.json')]);
+ if(slug&&results[0].status==='rejected')throw results[0].reason;
  if(results.every(r=>r.status==='rejected'))throw Error('Writing is temporarily unavailable.');
  const native=results[0].status==='fulfilled'?results[0].value:[];
  const external=results[1].status==='fulfilled'?results[1].value:[];
- const posts=[...native,...(slug?[]:external)].sort((a,b)=>b.date.localeCompare(a.date));
- if(slug){const post=posts.find(p=>p.slug===slug);if(!post){document.title='Post not found · Andile Jaden Mbele';app.innerHTML='<section class="blog-head"><h1>Post not found.</h1><p>This post is unavailable.</p><a href="/blog">Back to writing</a></section>';return;}document.title=`${post.title} · Andile Jaden Mbele`;app.innerHTML=`<section class="article"><a class="text-link" href="/blog">← All writing</a>${article(post)}</section>`;document.querySelector('meta[name="description"]').content=post.excerpt;return;}
- app.innerHTML=`<section class="blog-head"><p class="eyebrow">Notes & essays</p><h1>Writing.</h1><p class="about">Software, infrastructure, and building things.</p><p><a class="text-link" href="https://medium.com/@andilembele">On Medium ↗</a> · <a href="https://rooibosradar.com/">Rooibos Radar ↗</a></p></section>${results.some(r=>r.status==='rejected')?'<p class="notice">Some writing could not be loaded. <a href="https://medium.com/@andilembele">Browse Medium ↗</a></p>':''}<div class="filters"><label>Search<input id="search" type="search" placeholder="Search writing"></label><label>Topic<select id="topic"><option value="">All topics</option>${[...new Set(posts.flatMap(p=>p.tags))].sort().map(t=>`<option value="${e(t)}">${e(t)}</option>`).join('')}</select></label></div><div id="results" aria-live="polite"></div>`;
- function filter(){const q=document.querySelector('#search').value.toLowerCase(),tag=document.querySelector('#topic').value;const visible=posts.filter(p=>(!tag||p.tags.includes(tag))&&[p.title,p.excerpt,...p.tags].join(' ').toLowerCase().includes(q));document.querySelector('#results').innerHTML=visible.length?visible.map(p=>`<a class="post-row" href="${p.source==='Medium'?e(p.url):'/blog/'+e(p.slug)}"><p class="meta">${meta(p)}</p><h2>${e(p.title)}</h2>${p.excerpt?`<p>${e(p.excerpt)}</p>`:''}${p.source==='Medium'?'<span class="text-link">Read on Medium ↗</span>':''}</a>`).join(''):`<p class="empty">${posts.length?'No posts match. Try another search or topic.':'No essays here yet. You can find my existing writing on Medium and Rooibos Radar.'}</p>`;}
- document.querySelector('#search').oninput=filter;document.querySelector('#topic').onchange=filter;filter();
+ const posts=visiblePosts([...native,...external]);
+ if(slug){
+  const post=native.find(p=>p.slug===slug);
+  if(!post){document.title='Post not found · Andile Jaden Mbele';app.innerHTML='<section class="blog-head"><h1>Post not found.</h1><p>This post is unavailable.</p><a href="/blog">Back to writing</a></section>';return;}
+  document.title=`${post.title} · Andile Jaden Mbele`;
+  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div><nav id="related" aria-label="More writing"></nav></section>`;
+  document.querySelector('meta[name="description"]').content=post.excerpt;
+  const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
+  if(headings.length>2){const contents=document.createElement('details');contents.className='article-contents';contents.innerHTML='<summary>In this article</summary><ol>'+headings.map((h,i)=>{h.id='section-'+(i+1);return `<li><a href="#${h.id}">${e(h.textContent)}</a></li>`;}).join('')+'</ol>';app.querySelector('.prose').before(contents);}
+  document.querySelector('#copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser.';}};
+  document.querySelector('#related').innerHTML='<h2 class="small-heading">More writing</h2>'+archive(posts.filter(p=>p!==post).slice(0,2));return;
+ }
+ app.innerHTML=indexMarkup(posts);
+ if(!preview&&results.some(r=>r.status==='rejected')){const notice=document.createElement('p');notice.className='notice';notice.textContent='Some articles could not be loaded. The available writing is shown below.';document.querySelector('#latest').before(notice);}
+ const search=document.querySelector('#search'),topic=document.querySelector('#topic'),source=document.querySelector('#source'),more=document.querySelector('#more'),reset=document.querySelector('#reset-filters');
+ const params=new URLSearchParams(location.search);search.value=params.get('q')||'';topic.value=params.get('topic')||'';source.value=params.get('source')||'';let limit=6;
+ document.querySelector('#browse').hidden=false;
+ function filter(){const state={query:search.value,topic:topic.value,source:source.value},matched=visiblePosts(posts,state),active=Boolean(state.query||state.topic||state.source);document.querySelector('#latest').hidden=active;
+ document.querySelector('#results').innerHTML=matched.length?archive(matched.slice(0,limit)):'<div class="empty"><h3>No matching articles.</h3><p>Try a different search or clear the filters.</p></div>';
+ document.querySelector('#post-count').textContent=`${matched.length} ${matched.length===1?'article':'articles'}`;
+ document.querySelector('#results-status').textContent=matched.length?`Showing ${Math.min(limit,matched.length)} of ${matched.length}`:'';
+ more.hidden=matched.length<=limit;reset.hidden=!active;
+ const url=new URL(location.href);for(const [k,v] of Object.entries({q:state.query,topic:state.topic,source:state.source})){if(v)url.searchParams.set(k,v);else url.searchParams.delete(k);}history.replaceState(null,'',url);
+ }
+ document.querySelector('#browse').onsubmit=event=>event.preventDefault();
+ for(const input of [search,topic,source])input.addEventListener(input===search?'input':'change',()=>{limit=6;filter();});
+ more.onclick=()=>{limit+=6;filter();};reset.onclick=()=>{search.value='';topic.value='';source.value='';limit=6;filter();search.focus();};filter();
 }
 async function editor(){document.title='Local editor · Andile Jaden Mbele';document.querySelector('meta[name="description"]').content='Local writing workspace';let token=(await api('/api/session')).token,originalSlug=null,dirty=false;
  app.innerHTML=`<section class="blog-head"><p class="eyebrow">Writing workspace</p><h1>Editor.</h1><p class="notice">Local only. Posts and images stay on this computer. Online publishing and sign-in need Andile’s own hosting setup.</p></section><div class="cms-layout"><aside><div class="actions"><button id="new" type="button">New post</button><button id="backup" type="button">Export all posts</button></div><h2 class="small-heading">Posts</h2><div id="post-list"></div></aside><section><form id="editor"><label>Title<input name="title" required maxlength="200"></label><div class="fields"><label>URL slug<input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="100"></label><label>Date<input name="date" type="date" required></label></div><label>Short description<textarea name="excerpt" rows="2" maxlength="1000"></textarea></label><label>Tags, separated by commas<input name="tags" placeholder="Software, Infrastructure"></label><div class="fields"><label>Visibility on local blog<select name="status"><option value="draft">Draft (hidden)</option><option value="published">Visible locally</option></select></label><label>Cover image<input name="coverImage" readonly placeholder="No cover selected"></label></div><div class="actions"><label class="file-button">Add image<input id="image" type="file" accept="image/png,image/jpeg,image/webp"></label><button id="clear-cover" type="button">Remove cover</button><label class="file-button">Import Markdown<input id="import" type="file" accept=".md,.txt,text/markdown,text/plain"></label></div><p class="help">An uploaded image becomes the cover. Its Markdown is also inserted at the cursor; remove it from the body if you only want a cover.</p><div class="toolbar">${Object.keys(blogSnippets).map(k=>`<button type="button" data-snippet="${k}">${k}</button>`).join('')}</div><label>Body<textarea name="content" required rows="18" maxlength="200000" spellcheck="true" placeholder="Write in Markdown…"></textarea></label><p class="help">Headings, bold, italic, links, lists, code, quotes, images, and lede/stat/source blocks. Raw HTML is shown as text.</p><div class="actions"><button class="primary" type="submit">Save post locally</button><button id="preview" type="button" aria-expanded="false">Preview</button><button id="download" type="button">Export Markdown</button></div><p id="status" role="status" aria-live="polite"></p></form><section id="preview-body" class="article" hidden aria-label="Post preview"></section></section></div>`;

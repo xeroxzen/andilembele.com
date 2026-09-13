@@ -4,7 +4,7 @@ A minimal personal website with a responsive experience timeline, selected proje
 
 ## Run locally
 
-Requires Node.js 20 or newer. There are no package dependencies or build step.
+Requires Node.js 20 or newer. There are no package dependencies. Run `npm run build` after changing blog layout or Medium metadata.
 
 ```sh
 git clone https://github.com/Thabhelo/andile.git
@@ -36,10 +36,14 @@ Read [HANDOFF.md](HANDOFF.md) before configuring the backend or deploying. No cl
 npm test
 ```
 
-Tests cover persistence, draft exclusion, slug changes, request protection, media handling, and Markdown safety. They exercise request handlers without opening a network port. The new CMS still needs a complete live browser walkthrough after starting the updated server.
+Tests cover persistence, draft exclusion, slug changes, request protection, media handling, and Markdown safety. They exercise request handlers without opening a network port. The public static preview has been checked in the browser for rendering, search and archive expansion. The CMS still needs a complete live browser walkthrough after starting the updated server.
 
 ## Content and notices
 
-The résumé is included unchanged. Profile content is based on supplied professional information and public project descriptions; confirm it before launch. The native blog starts empty. Existing writing is linked on Medium and Rooibos Radar.
+The résumé is included unchanged. Profile content is based on supplied professional information and public project descriptions; confirm it before launch. The blog includes ten Medium article links, a featured article, year archive, search, topic/source filters, and incremental browsing. Native posts start empty and can be authored in the local CMS. Article pages support a table of contents, copy-link action, and more-writing links. Medium article bodies are not republished.
 
 Third-party license notices are retained in `licenses/`.
+
+## Blog preview and build
+
+`npm run build` regenerates the public blog fallback and `dist/blog-preview.html`. The latter is an interactive preview of public Medium metadata that works on a basic static server, without the CMS. It includes no drafts or saved local posts. Open `/blog-preview.html` on the existing preview server; use `/blog` and `/blog/admin` when running `npm start`. `npm run sync:medium` refreshes public metadata and rebuilds the blog. The normal blog has readable article links even before JavaScript loads.

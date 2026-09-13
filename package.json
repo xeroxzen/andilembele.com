@@ -6,7 +6,8 @@
     "start": "node server.mjs",
     "dev": "node server.mjs",
     "test": "node --test tests/*.test.mjs",
-    "sync:medium": "python3 scripts/sync-medium.py"
+    "sync:medium": "python3 scripts/sync-medium.py && npm run build",
+    "build": "node scripts/build-blog.mjs"
   },
   "type": "module"
 }
