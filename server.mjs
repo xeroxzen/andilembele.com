@@ -9,7 +9,7 @@ export function createHandler({directory=fileURLToPath(new URL('./data/',import.
 const data=directory;
 const store=createStore(data),csrf=randomBytes(32).toString('hex');
 const host=`127.0.0.1:${port}`;
-const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.pdf':'application/pdf','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
+const types={'.json':'application/json; charset=utf-8','.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.pdf':'application/pdf','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
 function json(res,value,status=200){res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));}
 async function body(req,limit=300000){let chunks=[],n=0;for await(const c of req){n+=c.length;if(n>limit)throw Error('File or request is too large');chunks.push(c);}return Buffer.concat(chunks);}
 return async(req,res)=>{try{

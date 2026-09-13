@@ -31,7 +31,13 @@ Do not reuse Thabhelo's Google Cloud, Firebase, Vercel, email, or analytics proj
 
 ## Content
 
-The native blog starts empty. Existing public writing is linked on Medium and Rooibos Radar. Add Andile's actual articles in the editor; no invented posts are included.
+The Writing page combines native published posts with ten verified Medium article links, sorted by date and searchable by title and topic. Medium articles open on Medium; their bodies are not copied. The homepage highlights three recent articles. Native posts still start empty.
+
+Run `npm run sync:medium` (Python 3 required) to refresh `dist/blog/medium-posts.json` from Andile's public RSS feed. Previously indexed articles are retained because Medium exposes a limited recent feed. This is a checked-in snapshot, not a live automatic sync. Configure a scheduled refresh or build-time refresh on Andile's chosen hosting, preserve the last good snapshot on failures, and regenerate homepage highlights as part of that production workflow. No Medium password or API key is needed for public RSS. Ask Andile before importing full articles, and preserve original links and canonical attribution if he chooses to republish.
+
+## Existing domain: andilembele.com
+
+Andile already controls his domain. Have him sign in to its registrar/DNS provider and chosen hosting account himself. Inspect current DNS and record a rollback before changes. Confirm apex versus www, connect the domain using the hosting provider's verified records, and change only website records. Preserve MX, SPF, DKIM, DMARC and unrelated verification records. Confirm any old website routes and add redirects where necessary. Verify HTTPS, both hostnames, canonical URLs, social metadata, sitemap and RSS, and keep admin/drafts out of indexing. Show the staging site and proposed DNS changes for approval before production cutover. Use only Andile's accounts and infrastructure.
 
 ## Validation and preview restart
 

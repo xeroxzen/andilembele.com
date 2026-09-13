@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node server.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "sync:medium": "python3 scripts/sync-medium.py"
   },
   "type": "module"
 }
