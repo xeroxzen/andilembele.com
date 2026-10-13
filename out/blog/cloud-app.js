@@ -63,6 +63,24 @@ note: Context and source.
 `),i.textContent="Image saved locally."}catch(O){i.textContent=O.message}E.target.value=""}},document.querySelector("#import").onchange=async E=>{let P=E.target.files[0];if(P){if(P.size>2e5){i.textContent="Choose a Markdown file smaller than 200 KB.";return}s("content").value&&!confirm("Replace the current body with this Markdown file?")||(s("content").value=await P.text(),c(),E.target.value="")}},window.addEventListener("beforeunload",E=>{t&&(E.preventDefault(),E.returnValue="")});try{let E=Hr.getItem(qr());if(E){let P=JSON.parse(E);u(P.post,P.originalSlug),t=!0,i.textContent="Recovered unsaved work from this browser. Save to keep it."}}catch{}await f()}function AA(){return!Hr.getItem(qr())||confirm("Sign out and discard the unsaved recovery copy?")}async function ff(){document.body.classList.add("admin-page"),document.title="Admin \xB7 Andile Jaden Mbele";let n;try{n=await St("/api/session")}catch{if(Qe){$t.innerHTML='<section class="admin-login soft-card"><span class="login-mark" aria-hidden="true">\u21B3</span><h1>Blog admin</h1><button class="primary" id="google-login">Continue with Google</button><p id="login-status" role="status"></p></section>',document.querySelector("#google-login").onclick=async()=>{let t=document.querySelector("#google-login");t.disabled=!0;try{await pf.login(),await ff()}catch(r){document.querySelector("#login-status").textContent=r.message,t.disabled=!1}};return}$t.innerHTML='<section class="blog-head"><p class="eyebrow">Private workspace</p><h1>Sign in.</h1><form id="login"><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="primary">Sign in</button><p id="login-status" role="status"></p></form></section>',document.querySelector("#login").onsubmit=async t=>{t.preventDefault();try{await St("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:t.target.elements.password.value})}),await ff()}catch(r){document.querySelector("#login-status").textContent=r.message}};return}if(await vA(),Qe||n.passwordProtected){let e=document.createElement("button");e.className="sign-out",e.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h10"/></svg>Sign out',e.onclick=async()=>{AA()&&(await St("/api/logout",{method:"POST",headers:{"X-CMS-Token":n.token}}),location.href="/admin/")},$t.querySelector(".admin-heading-actions").append(e)}}try{location.pathname.startsWith("/admin")||location.pathname.replace(/\/$/,"")==="/blog/admin"?await ff():await TA()}catch(n){$t.innerHTML=`<section class="blog-head"><h1>Unable to load.</h1><p>${ye(n.message)}</p><a href="${location.pathname.replace(/\/$/,"")==="/blog/admin"?"/blog/admin":"/blog"}">Try again</a></section>`}
 /*! Bundled license information:
 
+@firebase/util/dist/postinstall.mjs:
+  (**
+   * @license
+   * Copyright 2025 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   *)
+
 @firebase/util/dist/index.esm.js:
   (**
    * @license

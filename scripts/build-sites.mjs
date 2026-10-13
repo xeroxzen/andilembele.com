@@ -11,9 +11,10 @@ await rm(out,{recursive:true,force:true});
 await mkdir(new URL('blog/',out),{recursive:true});
 await cp(new URL('assets/',source),new URL('assets/',out),{recursive:true});
 await cp(new URL('styles.css',source),new URL('styles.css',out));
+await cp(new URL('nav.js',source),new URL('nav.js',out));
 await cp(new URL('blog/blog.css',source),new URL('blog/blog.css',out));
 let home=await readFile(new URL('index.html',source),'utf8');
-home=home.replace('href="styles.css"','href="/styles.css?v=terminal-green-2"');
+home=home.replace(/href="\/?styles\.css[^"]*"/,'href="/styles.css?v=editorial-3"');
 await writeFile(new URL('index.html',out),home);
 // Shared renderer runs locally against files and in production against Firebase.
 const blog=(await readFile(new URL('blog/index.html',source),'utf8')).replace('<body>','<body data-cms="firebase">').replace('src="/blog/app.js"','src="/blog/cloud-app.js"');
