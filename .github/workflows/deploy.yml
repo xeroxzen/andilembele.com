@@ -37,6 +37,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Fetch published journal posts
+        if: github.event_name != 'pull_request'
+        run: npm run fetch:posts
+
       - name: Build and test
         run: npm test
 
