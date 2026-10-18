@@ -11,3 +11,4 @@ data/
 *.log
 .vercel/
 .firebase/
+dist/blog/journal-posts.json
