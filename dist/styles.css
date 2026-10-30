@@ -43,6 +43,7 @@ html{scroll-padding-top:105px}
 a.project:hover h3{color:var(--accent)}
 .experience-list .job::before{background:#d5ecd7}
 .experience-list .job::after{background:#8ade92}
+.experience-list .job:first-child::after{background:var(--accent)}
 .experience-list .job-content h3{color:#1d4325}
 .contact .email{text-decoration-color:#79db85}
 @media(max-width:760px){.topbar{gap:16px}.topbar nav{gap:4px}}
@@ -77,6 +78,7 @@ a.project:hover{background:#efffef}
 .portrait-orbit{position:relative;display:block;width:144px;height:144px;flex-shrink:0}
 .portrait{width:144px;height:144px;object-fit:cover;border-radius:50%;border:1px solid var(--line);flex-shrink:0}
 .personal-note{display:flex;gap:17px;align-items:center;margin-top:26px;color:var(--muted)}.personal-note p{font-size:14px;line-height:1.7}.ascii-rocket{margin:0;color:var(--accent);font:12px/1.15 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;flex-shrink:0}
+.experience-list .job:first-child::after{background:var(--signal)}
 @media(max-width:640px){.identity{align-items:flex-start;gap:15px}.portrait-orbit,.portrait{width:104px;height:104px}.identity .eyebrow{font-size:12px;line-height:1.5;margin-bottom:7px}.identity h1{font-size:28px}.personal-note{margin-top:22px}}
 
 footer{flex-wrap:wrap;align-items:center;gap:14px 24px}.social-links{display:flex;flex-wrap:wrap;gap:10px 20px}.social-links a:hover{text-decoration:underline}
@@ -136,6 +138,7 @@ footer{flex-wrap:wrap;align-items:center;gap:14px 24px}.social-links{display:fle
 .talk-card:hover h3,.notes h3 a:hover{color:var(--accent)}
 .intro-links span{color:var(--muted)}
 .orbit{border-color:var(--line)}
+.experience-list .job:first-child::after{background:var(--accent)}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 16px;margin:32px 0 0;padding-top:22px;border-top:1px solid var(--line)}
 .metrics div{display:flex;flex-direction:column-reverse;gap:4px}
 .metrics dt,.metrics dd{margin:0}
