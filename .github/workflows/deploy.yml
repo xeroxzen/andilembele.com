@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -16,6 +18,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      unchanged: ${{ steps.posts.outputs.unchanged }}
     env:
       SITE_URL: https://andilembele.com
       FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY || 'ci-placeholder' }}
@@ -38,14 +42,25 @@ jobs:
         run: npm ci
 
       - name: Fetch published journal posts
+        id: posts
         if: github.event_name != 'pull_request'
-        run: npm run fetch:posts
+        run: |
+          set -euo pipefail
+          npm run fetch:posts
+          # Scheduled runs only rebuild when posts changed, so the five retained releases stay useful for rollback.
+          # A failed download leaves the snapshot unmatched, which correctly falls through to a rebuild.
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]] \
+            && curl --fail --silent --show-error --output live-posts.json "$SITE_URL/blog/journal-posts.json" \
+            && cmp --silent live-posts.json dist/blog/journal-posts.json; then
+            echo "unchanged=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build and test
+        if: steps.posts.outputs.unchanged != 'true'
         run: npm test
 
       - name: Package public site
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.posts.outputs.unchanged != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: public-site-${{ github.sha }}
@@ -54,7 +69,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    if: github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    if: github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true' && needs.build.outputs.unchanged != 'true'
     needs: build
     runs-on: ubuntu-latest
     environment: production

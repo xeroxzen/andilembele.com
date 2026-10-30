@@ -144,7 +144,7 @@ footer{flex-wrap:wrap;align-items:center;gap:14px 24px}.social-links{display:fle
 .metrics dt,.metrics dd{margin:0}
 .metrics dt{font-size:12px;color:var(--muted);line-height:1.35}
 .metrics dd{font-size:22px;font-weight:550;letter-spacing:-.03em;line-height:1.1}
-.experience-list{--date-width:108px}
+.experience-list{--date-width:142px}
 .experience-list .date{white-space:nowrap;font-variant-numeric:tabular-nums}
 .projects .project:has(+ .project-more){padding-bottom:18px}
 .project-more{margin-top:4px;padding-top:8px;border-top:1px solid var(--line)}
@@ -171,7 +171,7 @@ a.project-compact:hover .meta{color:var(--accent)}
  .topbar nav::-webkit-scrollbar{display:none}
  .topbar nav a{padding:5px 8px;font-size:12px}
  .experience-list{--date-width:78px}
- .experience-list .date{font-size:11px;white-space:nowrap;max-width:none}
+ .experience-list .date{font-size:11px;white-space:normal;max-width:none}
  .talk-gallery{grid-template-columns:1fr}
  .project-compact{flex-wrap:wrap;gap:4px}
  .project-compact .meta{white-space:normal}
