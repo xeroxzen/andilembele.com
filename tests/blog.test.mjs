@@ -18,6 +18,11 @@ test('article rendering escapes untrusted metadata and restricts external links'
  assert.equal(postLink(p),'https://medium.com/@andilembele');
  assert.equal(postLink({...p,url:'https://medium.com.evil.test/'}),'https://medium.com/@andilembele');
  assert.equal(postLink({slug:'native'}),'/blog/?post=native');
+ globalThis.document={body:{dataset:{pages:'native other'}}};
+ try{
+  assert.equal(postLink({slug:'native'}),'/blog/native/');
+  assert.equal(postLink({slug:'newer'}),'/blog/?post=newer');
+ }finally{delete globalThis.document;}
 });
 test('built fallback includes real article links without needing JavaScript',async()=>{
  const html=await readFile(new URL('../dist/blog/index.html',import.meta.url),'utf8');
@@ -46,6 +51,9 @@ test('journal post pages carry the article title, description, and address for l
  assert.ok(html.includes('<title>Agents &amp; &quot;macOS&quot; · Andile Jaden Mbele</title>'));
  assert.ok(html.includes('<meta property="og:title" content="Agents &amp; &quot;macOS&quot;">'));
  assert.ok(html.includes('<meta property="og:type" content="article">'));
+ assert.match(html,/<meta property="og:image" content="https?:\/\/[^"]+\/assets\/og\/local-agents\.png">/);
+ assert.ok(html.includes('<meta property="og:image:width" content="1200">'));
+ assert.ok(html.includes('<meta property="og:image:height" content="631">'));
  assert.match(html,/<meta property="og:url" content="https?:\/\/[^"]+\/blog\/local-agents\/">/);
  assert.ok(html.includes('<meta name="description" content="Setup Run one &lt;b&gt;agent&lt;/b&gt;'));
  assert.ok(html.includes('<h1>Agents &amp; &quot;macOS&quot;</h1>'));
@@ -59,4 +67,15 @@ test('article view moves prerendered posts to their shareable /blog/<slug>/ addr
  assert.ok(app.includes("history.replaceState(null,'',pretty+location.hash)"));
  const shell=await readFile(new URL('../out/blog/index.html',import.meta.url),'utf8');
  assert.match(shell,/<body data-cms="firebase" data-pages="[a-z0-9 -]*">/);
+ assert.ok(Array.isArray(JSON.parse(await readFile(new URL('../out/blog/journal-posts.json',import.meta.url),'utf8'))));
+});
+test('article cards fit long titles and render at the advertised size',async()=>{
+ const {fitTitle,renderArticleCard,ARTICLE_IMAGE}=await import('../components/og-image.mjs');
+ assert.deepEqual(fitTitle('Short title'),{size:96,lines:['Short title']});
+ const long=fitTitle('word '.repeat(60));
+ assert.equal(long.lines.length,4);
+ assert.ok(long.lines[3].endsWith('…'));
+ const png=await renderArticleCard({title:'Costs & <trade-offs>',label:'Writing · Oct 27, 2026'});
+ assert.equal(png.readUInt32BE(16),ARTICLE_IMAGE.width);
+ assert.equal(png.readUInt32BE(20),ARTICLE_IMAGE.height);
 });

@@ -2,6 +2,8 @@ import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {renderFooter} from '../components/footer.mjs';
 import {renderPostPage} from '../components/post-page.mjs';
+import {renderArticleCard} from '../components/og-image.mjs';
+import {dateLabel} from '../dist/blog/listing.js';
 import {fileURLToPath} from 'node:url';
 import {esbuildDefines, firebaseConfig, loadEnv} from '../lib/env.mjs';
 loadEnv();
@@ -26,12 +28,16 @@ const cloudPage=html=>html.replace('<body>',`<body data-cms="firebase" data-page
 const blog=cloudPage(await readFile(new URL('blog/index.html',source),'utf8'));
 await writeFile(new URL('blog/index.html',out),blog);
 const template=await readFile(new URL('templates/blog.html',root),'utf8');
+await mkdir(new URL('assets/og/',out),{recursive:true});
 for(const post of journal){
  if(post.slug==='admin')throw Error('The slug "admin" is reserved for /blog/admin');
  await mkdir(new URL('blog/'+post.slug+'/',out),{recursive:true});
  await writeFile(new URL('blog/'+post.slug+'/index.html',out),cloudPage(renderPostPage(template,post)));
+ await writeFile(new URL('assets/og/'+post.slug+'.png',out),await renderArticleCard({title:post.title,label:'Writing · '+dateLabel(post.date)}));
 }
 await cp(new URL('blog/medium-posts.json',source),new URL('blog/medium-posts.json',out));
+// Published so the scheduled workflow can tell whether the live site is behind Firestore.
+await writeFile(new URL('blog/journal-posts.json',out),JSON.stringify(journal,null,1)+'\n');
 await build({entryPoints:[fileURLToPath(new URL('blog/app.js',source))],outfile:fileURLToPath(new URL('blog/cloud-app.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,define:esbuildDefines()});
 for(const route of ['admin','admin/posts','blog/admin']){
  await mkdir(new URL(route+'/',out),{recursive:true});
