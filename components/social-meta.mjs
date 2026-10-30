@@ -11,7 +11,7 @@ const escape = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;
 export function renderSocialMeta({ blog = false, page = null } = {}) {
   const origin = requireEnv('SITE_URL').replace(/\/$/, '');
   const title = page ? page.title : blog ? 'Writing · Andile Jaden Mbele' : 'Andile Jaden Mbele · Software Engineer';
-  const description = page ? page.description : blog ? 'Writing on software, infrastructure, and data.' : 'Software Engineer operating a four-region AWS platform and building internal systems that multiply engineering teams.';
+  const description = page ? page.description : blog ? 'Writing on software, infrastructure, and data.' : 'Software Engineer who ran a four-region AWS platform and builds internal systems that multiply engineering teams.';
   const path = page ? page.path : blog ? null : '/';
   const image = origin + (page ? page.image.path : '/assets/andile-opengraph.png?v=2');
   const size = page ? page.image : { width: 1730, height: 909 };
