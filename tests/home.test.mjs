@@ -29,3 +29,9 @@ test('homepage intro, projects, talks, tools, and contact follow the editorial l
  assert.match(styles,/\.experience-list \.date\{white-space:nowrap/);
  assert.match(styles,/\.topbar nav\{flex-wrap:nowrap/);
 });
+test('home stylesheet URL carries a hash of the stylesheet so immutable caches refresh',async()=>{
+ const {createHash}=await import('node:crypto');
+ const version=createHash('sha256').update(await readFile(new URL('../out/styles.css',import.meta.url))).digest('hex').slice(0,10);
+ const home=await readFile(new URL('../out/index.html',import.meta.url),'utf8');
+ assert.ok(home.includes(`href="/styles.css?v=${version}"`));
+});

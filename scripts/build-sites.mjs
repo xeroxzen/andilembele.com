@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {renderFooter} from '../components/footer.mjs';
@@ -17,7 +18,9 @@ await cp(new URL('styles.css',source),new URL('styles.css',out));
 await cp(new URL('nav.js',source),new URL('nav.js',out));
 await cp(new URL('blog/blog.css',source),new URL('blog/blog.css',out));
 let home=await readFile(new URL('index.html',source),'utf8');
-home=home.replace(/href="\/?styles\.css[^"]*"/,'href="/styles.css?v=editorial-3"');
+// nginx serves CSS as immutable for a year, so the URL has to change whenever the stylesheet does.
+const stylesVersion=createHash('sha256').update(await readFile(new URL('styles.css',source))).digest('hex').slice(0,10);
+home=home.replace(/href="\/?styles\.css[^"]*"/,`href="/styles.css?v=${stylesVersion}"`);
 await writeFile(new URL('index.html',out),home);
 // Published journal posts snapshotted by scripts/fetch-posts.mjs; absent in local and pull-request builds.
 let journal=[];
