@@ -62,7 +62,7 @@ location = /assets/Andile_Mbele_Resume.pdf {
     return 301 /assets/Andile_Mbele.pdf;
 }
 
-location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|pdf)$ {
+location ~* \.(jpg|jpeg|png|gif|webp|ico|css|js|svg|pdf)$ {
     expires 1y;
     add_header Cache-Control "public, immutable";
     include /etc/nginx/snippets/andilembele-headers.conf;
