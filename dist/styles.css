@@ -184,3 +184,16 @@ a.project-compact:hover .meta{color:var(--accent)}
 picture{display:contents}
 .metrics-label{margin:32px 0 0;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.35}
 .metrics-label+.metrics{margin-top:14px;padding-top:0;border-top:0}
+.now-playing{margin-top:18px;font-size:13px;line-height:1.45}
+.now-playing-link{display:inline-flex;align-items:center;gap:12px;max-width:100%;color:inherit;text-decoration:none}
+.now-playing-art{width:40px;height:40px;border-radius:4px;border:1px solid var(--line);flex-shrink:0;object-fit:cover}
+.now-playing-text{display:flex;flex-direction:column;min-width:0}
+.now-playing-label{display:inline-flex;align-items:flex-end;color:var(--muted);font-size:12px}
+.now-playing-track{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+a.now-playing-link:hover .now-playing-track{color:var(--accent);text-decoration:underline}
+.now-playing-bars,.now-playing-bars::before,.now-playing-bars::after{display:block;width:2px;height:10px;background:var(--accent);transform-origin:bottom;animation:now-playing-bar .9s ease-in-out infinite alternate}
+.now-playing-bars{position:relative;margin:0 10px 3px 4px}
+.now-playing-bars::before,.now-playing-bars::after{content:"";position:absolute;bottom:0}
+.now-playing-bars::before{left:-4px;animation-delay:-.3s}
+.now-playing-bars::after{left:4px;animation-delay:-.6s}
+@keyframes now-playing-bar{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
