@@ -47,6 +47,49 @@ nginx -t
 systemctl reload nginx
 ```
 
+### Error page and security headers
+
+Applied on 2026-11-09. Security headers live in `/etc/nginx/snippets/andilembele-headers.conf`. nginx drops inherited `add_header` lines in any `location` that sets its own (the immutable-cache block for static files does), so the snippet is included both at server level and in that block. Include it in any new location that adds headers.
+
+```nginx
+# /etc/nginx/sites-available/andilembele.com, inside the 443 server block
+server_tokens off;
+error_page 404 /404.html;
+include /etc/nginx/snippets/andilembele-headers.conf;
+
+# The resume was renamed; keep old links and search results working.
+location = /assets/Andile_Mbele_Resume.pdf {
+    return 301 /assets/Andile_Mbele.pdf;
+}
+
+location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|pdf)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    include /etc/nginx/snippets/andilembele-headers.conf;
+}
+```
+
+```nginx
+# /etc/nginx/snippets/andilembele-headers.conf
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Strict-Transport-Security "max-age=31536000" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN>; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+```
+
+`frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`; the admin sign-in popup is framed from it.
+
+The policy was verified in report-only mode against admin sign-in and saving, then switched to enforcing on 2026-11-09. Before loosening or tightening it, rename the header to `Content-Security-Policy-Report-Only`, check the console on `/admin/`, home, and blog, then switch back. Add `includeSubDomains` to HSTS only after confirming every subdomain serves HTTPS. Run `nginx -t` before every `systemctl reload nginx`.
+
+Check the result with:
+
+```sh
+curl -sI https://andilembele.com/ | grep -iE 'strict|content-security|referrer|server'
+curl -s https://andilembele.com/missing | grep -F 'Page not found'
+```
+
 ## GitHub configuration
 
 The workflow expects these repository settings:

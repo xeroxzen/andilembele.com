@@ -3,13 +3,15 @@ import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {renderFooter} from '../components/footer.mjs';
 import {renderPostPage} from '../components/post-page.mjs';
-import {renderArticleCard} from '../components/og-image.mjs';
+import {renderArticleCard,renderSiteCardJpeg} from '../components/og-image.mjs';
+import {renderRobots,renderSitemap,renderFeed} from '../components/crawl-files.mjs';
 import {dateLabel} from '../dist/blog/listing.js';
 import {fileURLToPath} from 'node:url';
-import {esbuildDefines, firebaseConfig, loadEnv} from '../lib/env.mjs';
+import {esbuildDefines, firebaseConfig, loadEnv, requireEnv} from '../lib/env.mjs';
 loadEnv();
 firebaseConfig();
 const root=new URL('../',import.meta.url);
+const origin=requireEnv('SITE_URL').replace(/\/$/,'');
 const source=new URL('dist/',root),out=new URL('out/',root);
 await rm(out,{recursive:true,force:true});
 await mkdir(new URL('blog/',out),{recursive:true});
@@ -32,13 +34,18 @@ const blog=cloudPage(await readFile(new URL('blog/index.html',source),'utf8'));
 await writeFile(new URL('blog/index.html',out),blog);
 const template=await readFile(new URL('templates/blog.html',root),'utf8');
 await mkdir(new URL('assets/og/',out),{recursive:true});
+await writeFile(new URL('assets/andile-opengraph.jpg',out),await renderSiteCardJpeg());
 for(const post of journal){
  if(post.slug==='admin')throw Error('The slug "admin" is reserved for /blog/admin');
  await mkdir(new URL('blog/'+post.slug+'/',out),{recursive:true});
  await writeFile(new URL('blog/'+post.slug+'/index.html',out),cloudPage(renderPostPage(template,post)));
- await writeFile(new URL('assets/og/'+post.slug+'.png',out),await renderArticleCard({title:post.title,label:'Writing · '+dateLabel(post.date)}));
+ await writeFile(new URL('assets/og/'+post.slug+'.jpg',out),await renderArticleCard({title:post.title,label:'Writing · '+dateLabel(post.date)}));
 }
 await cp(new URL('blog/medium-posts.json',source),new URL('blog/medium-posts.json',out));
+const medium=JSON.parse(await readFile(new URL('blog/medium-posts.json',source),'utf8'));
+await writeFile(new URL('robots.txt',out),renderRobots(origin));
+await writeFile(new URL('sitemap.xml',out),renderSitemap(origin,journal));
+await writeFile(new URL('blog/feed.xml',out),renderFeed(origin,journal,medium));
 // Published so the scheduled workflow can tell whether the live site is behind Firestore.
 await writeFile(new URL('blog/journal-posts.json',out),JSON.stringify(journal,null,1)+'\n');
 await build({entryPoints:[fileURLToPath(new URL('blog/app.js',source))],outfile:fileURLToPath(new URL('blog/cloud-app.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,define:esbuildDefines()});

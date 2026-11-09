@@ -21,6 +21,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      jpeg-js:
+        specifier: 0.4.4
+        version: 0.4.4
 
 packages:
 
@@ -584,6 +587,9 @@ packages:
   is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
+
+  jpeg-js@0.4.4:
+    resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
@@ -1231,6 +1237,8 @@ snapshots:
   idb@7.1.1: {}
 
   is-fullwidth-code-point@3.0.0: {}
+
+  jpeg-js@0.4.4: {}
 
   lodash.camelcase@4.3.0: {}
 
