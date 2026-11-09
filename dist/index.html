@@ -42,8 +42,9 @@
     </header>
     <main>
       <section class="intro" id="about" aria-labelledby="name">
-        <div class="identity"><span class="portrait-orbit"><span class="orbit" aria-hidden="true"></span><img
-              class="portrait" src="assets/andile-mbele.jpg" width="144" height="144" alt="Andile Jaden Mbele"></span>
+        <div class="identity"><span class="portrait-orbit"><span class="orbit" aria-hidden="true"></span><picture><source type="image/webp" srcset="assets/andile-mbele.webp"><img
+                class="portrait" src="assets/andile-mbele.jpg" width="144" height="144"
+                alt="Andile Jaden Mbele"></picture></span>
           <div>
             <p class="eyebrow">Software Engineer</p>
             <h1 id="name">Andile Jaden Mbele<span class="period">.</span></h1>
@@ -60,7 +61,8 @@
           </span>
           <p>Self-taught, I love engineering, code, coffee, data &amp; rockets</p>
         </div>
-        <dl class="metrics" aria-label="Platform snapshot at ZimWorx">
+        <p class="metrics-label" id="metrics-label">The AWS platform I ran at ZimWorx, 2025–26</p>
+        <dl class="metrics" aria-labelledby="metrics-label">
           <div>
             <dt>ECS services</dt>
             <dd>37</dd>
@@ -243,25 +245,25 @@
         <div class="section-body notes">
           <div class="talk-gallery">
             <a class="talk-card" href="https://www.linkedin.com/feed/update/urn:li:activity:7462032383765139456/">
-              <div class="talk-image"><img src="/assets/talks/sayd-ai-diplomacy-2026.jpg"
+              <div class="talk-image"><picture><source type="image/webp" srcset="/assets/talks/sayd-ai-diplomacy-2026.webp"><img src="/assets/talks/sayd-ai-diplomacy-2026.jpg"
                   alt="Andile speaking at the Southern African Young Diplomats Summit" width="480" height="720"
-                  loading="lazy"></div>
+                  loading="lazy"></picture></div>
               <h3>Enhancing Negotiation or Replacing Diplomats?</h3>
               <p>SAYD keynote · 2026</p>
             </a>
             <a class="talk-card"
               href="https://www.linkedin.com/posts/pyconafrica_python-ai-whisper-activity-7381993670603878400-SjbO">
-              <div class="talk-image"><img src="/assets/talks/pycon-africa-2025.jpg"
+              <div class="talk-image"><picture><source type="image/webp" srcset="/assets/talks/pycon-africa-2025.webp"><img src="/assets/talks/pycon-africa-2025.jpg"
                   alt="Andile presenting EchoFind at a lectern at PyCon Africa" width="800" height="1066"
-                  loading="lazy"></div>
+                  loading="lazy"></picture></div>
               <h3>Making voice notes searchable</h3>
               <p>PyCon Africa · 2025</p>
             </a>
             <a class="talk-card talk-card-graphic"
               href="https://www.linkedin.com/posts/pycon-zimbabwe_meet-our-speaker-andile-jaden-mbele-we-activity-7255597741681119234-0CTK">
-              <div class="talk-image"><img src="/assets/talks/pycon-zimbabwe-2024.jpg"
+              <div class="talk-image"><picture><source type="image/webp" srcset="/assets/talks/pycon-zimbabwe-2024.webp"><img src="/assets/talks/pycon-zimbabwe-2024.jpg"
                   alt="PyCon Zimbabwe speaker announcement for Andile Mbele’s WhatsApp chat analysis talk" width="1080"
-                  height="1080" loading="lazy"></div>
+                  height="1080" loading="lazy"></picture></div>
               <h3>Building a Flavourful WhatsApp Chat Analysis Tool</h3>
               <p>PyCon Zimbabwe · 2024</p>
             </a>
@@ -346,7 +348,8 @@
       <section class="section contact" id="contact" aria-labelledby="contact-heading">
         <h2 id="contact-heading">Contact</h2>
         <div class="section-body">
-          <p>For platforms, talks, or collaboration.</p><a class="email"
+          <p>Open to speaking, consulting and contract work on platforms, data, and AI agents, and advising early-stage
+            startups.</p><a class="email"
             href="mailto:andilembele020@gmail.com">andilembele020@gmail.com <span aria-hidden="true">↗</span></a>
         </div>
       </section>
