@@ -12,3 +12,4 @@ data/
 .vercel/
 .firebase/
 dist/blog/journal-posts.json
+out/

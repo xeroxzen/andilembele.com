@@ -1,15 +1,16 @@
 # Andile Jaden Mbele
 
-Production Google OAuth and Firestore CMS are configured.
-A minimal personal website with a responsive experience timeline, selected projects, entrepreneurship, talks, and a local blog/CMS.
+Source for [andilembele.com](https://andilembele.com): a static portfolio, a blog that mixes Medium links with journal posts, and a Firebase-backed CMS at `/admin/`.
 
 ## Run locally
 
-Requires Node.js 20 or newer. There are no package dependencies. Run `npm run build` after changing blog layout or Medium metadata.
+Requires Node.js 20 or newer.
 
 ```sh
 git clone https://github.com/xeroxzen/andilembele.com.git
 cd andilembele.com
+npm ci
+cp .env.example .env   # fill in the values; see Production below
 npm start
 ```
 
@@ -17,40 +18,44 @@ npm start
 - Blog: http://127.0.0.1:4173/blog
 - Local editor: http://127.0.0.1:4173/blog/admin
 
-Use `PORT=4174 npm start` if port 4173 is occupied. Stop an older preview before restarting the updated server.
+`npm start` rebuilds the pages, then serves `dist/` with a local-only CMS that saves posts and media to `data/` (gitignored; back it up). Set `CMS_ADMIN_PASSWORD` (12+ characters) to lock the editor. Never expose this server publicly. Use `PORT=4174 npm start` if 4173 is taken.
 
-## Editing
+## Where things live
 
-Portfolio content: `dist/index.html`. Shared styles: `dist/styles.css`. Blog and CMS: `dist/blog/`. Request handling: `server.mjs`. Content persistence: `lib/store.mjs`.
+| Change | Edit |
+| --- | --- |
+| Home page content and layout | `templates/home.html` |
+| Blog page layout | `templates/blog.html` |
+| Footer and social links | `components/footer.mjs` |
+| Link-preview tags, canonical links, structured data | `components/social-meta.mjs` |
+| Share-card images | `components/og-image.mjs` (source image `dist/assets/andile-opengraph.png`) |
+| `robots.txt`, `sitemap.xml`, RSS feed | `components/crawl-files.mjs` |
+| Styles | `dist/styles.css`, `dist/blog/blog.css` |
+| Blog and CMS behaviour | `dist/blog/*.js` |
+| Images, résumé, icons | `dist/assets/` |
 
-The editor supports Markdown, previews, draft visibility, tags, covers, image uploads, and exports. Saved posts and media live in `data/`, which is deliberately excluded from Git. Back up that whole directory to preserve both posts and images.
+`dist/index.html`, `dist/blog/index.html` and `dist/blog-preview.html` are generated from the templates by `npm run build`; don't edit them by hand. `out/` is the full public build and is not committed.
 
-## Production setup
+## Builds
 
-Copy `.env.example` to `.env` and fill Firebase credentials, `SITE_URL`, and `CMS_ADMIN_EMAILS`. `npm run build:sites` reads that file, injects the web config into the production CMS bundle, and writes `out`. `/admin/` uses Google OAuth and Firestore rules generated from `CMS_ADMIN_EMAILS`. `npm start` is a separate local-only CMS and must never be exposed publicly. Set `CMS_ADMIN_PASSWORD` (12+ characters) before using the local editor. Custom-domain connection, cloud image storage and backups remain outstanding.
+- `npm run build` renders the templates into `dist/`.
+- `npm run build:sites` reads `.env` and writes the public site to `out/`: home, blog, a static page and share card for each journal post, the bundled production CMS, `robots.txt`, `sitemap.xml`, and `/blog/feed.xml`.
+- `npm run fetch:posts` snapshots published journal posts from Firestore for `build:sites`.
+- `npm run sync:medium` refreshes Medium article metadata and rebuilds.
 
-`.env` is gitignored. Firebase web keys still appear in the public CMS JavaScript after build; restrict authorized domains in the Firebase console.
+## Production
 
-Production delivery is handled by the gated GitHub Actions workflow in `.github/workflows/deploy.yml`. See [`docs/deployment.md`](docs/deployment.md) for the one-time server setup, repository settings, and release layout.
+`.env.example` lists the settings: `SITE_URL`, the Firebase web config, and `CMS_ADMIN_EMAILS`, the Google accounts allowed into `/admin/`. Firestore rules are generated from that list (`npm run build:rules`). Firebase web keys end up in the public CMS JavaScript, so restrict authorized domains in the Firebase console.
+
+GitHub Actions (`.github/workflows/deploy.yml`) builds and tests every pull request, deploys every push to `main`, and checks hourly for newly published journal posts. Server setup, nginx headers, and rollback are in [`docs/deployment.md`](docs/deployment.md).
 
 ## Checks
 
 ```sh
-npm test
+npm test          # builds out/, then runs tests/*.test.mjs
+npm run test:rules  # Firestore rules against the emulator
 ```
-
-Tests cover persistence, draft exclusion, slug changes, request protection, media handling, and Markdown safety. They exercise request handlers without opening a network port. The public static preview has been checked in the browser for rendering, search and archive expansion. The CMS still needs a complete live browser walkthrough after starting the updated server.
 
 ## Content and notices
 
-The résumé is included unchanged. Profile content is based on supplied professional information and public project descriptions; confirm it before launch. The blog includes ten Medium article links, a featured article, year archive, search, topic/source filters, and incremental browsing. Native posts start empty and can be authored in the local CMS. Article pages support a table of contents, copy-link action, and more-writing links. Medium article bodies are not republished.
-
-Third-party license notices are retained in `licenses/`.
-
-## Blog preview and build
-
-`npm run build` regenerates the public blog fallback and `dist/blog-preview.html`. The latter is an interactive preview of public Medium metadata that works on a basic static server, without the CMS. It includes no drafts or saved local posts. Open `/blog-preview.html` on the existing preview server; use `/blog` and `/blog/admin` when running `npm start`. `npm run sync:medium` refreshes public metadata and rebuilds the blog. The normal blog has readable article links even before JavaScript loads.
-
-## Shared page components
-
-Edit `components/footer.mjs` for footer markup and all footer social links. It is rendered at build time into every page, so it works without browser JavaScript. Edit `templates/home.html` and `templates/blog.html` for page layout; keep their `{{footer}}` placeholder. The blog template also uses `{{content}}`. Files in `dist/` and `out/` generated from these templates are build outputs; do not edit their footer copies. Run `npm run build:sites` to regenerate the full public site. `npm start` and `npm run dev` regenerate local pages first.
+Medium article bodies are linked, not republished. Third-party license notices are in `licenses/`.

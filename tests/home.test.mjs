@@ -12,7 +12,9 @@ test('homepage intro, projects, talks, tools, and contact follow the editorial l
  assert.match(home,/class="metrics"/);
  assert.equal(home.includes('Systems Engineer.'),false);
  assert.equal(home.includes('Say hello.'),false);
- assert.match(home,/For platforms, talks, or collaboration/);
+ assert.match(home,/Open to speaking, consulting and contract work/);
+ assert.match(home,/class="metrics-label"[^>]*>The AWS platform I ran at ZimWorx/);
+ assert.equal((home.match(/<source type="image\/webp"/g)||[]).length,4);
  assert.match(home,/class="project-more"/);
  assert.match(home,/class="talk-gallery"/);
  assert.equal((home.match(/class="talk-card/g)||[]).length,3);
