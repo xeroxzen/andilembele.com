@@ -197,3 +197,12 @@ a.now-playing-link:hover .now-playing-track{color:var(--accent);text-decoration:
 .now-playing-bars::before{left:-4px;animation-delay:-.3s}
 .now-playing-bars::after{left:4px;animation-delay:-.6s}
 @keyframes now-playing-bar{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+.footer-start{display:flex;flex-direction:column;gap:10px;min-width:0;flex:1 1 280px;max-width:360px}
+.playlist-link{display:inline-flex;align-items:center;gap:9px;color:var(--muted);text-decoration:none;line-height:1.4}
+.playlist-link strong{color:var(--ink);font-weight:550}
+a.playlist-link:hover strong{color:var(--accent);text-decoration:underline}
+.playlist-play{position:relative;flex-shrink:0;width:22px;height:22px;border:1px solid var(--line);border-radius:50%}
+.playlist-play::after{content:"";position:absolute;left:8px;top:6px;border-left:7px solid var(--accent);border-top:4.5px solid transparent;border-bottom:4.5px solid transparent}
+.playlist-player{display:block;width:100%;border:0;border-radius:12px}
+.playlist-close{margin-top:6px;padding:0;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+.playlist-close:hover{color:var(--accent)}

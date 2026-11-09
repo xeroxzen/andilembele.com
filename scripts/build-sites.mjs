@@ -19,6 +19,7 @@ await cp(new URL('assets/',source),new URL('assets/',out),{recursive:true});
 await cp(new URL('styles.css',source),new URL('styles.css',out));
 await cp(new URL('nav.js',source),new URL('nav.js',out));
 await cp(new URL('now-playing.js',source),new URL('now-playing.js',out));
+await cp(new URL('playlist.js',source),new URL('playlist.js',out));
 await cp(new URL('blog/blog.css',source),new URL('blog/blog.css',out));
 let home=await readFile(new URL('index.html',source),'utf8');
 // nginx serves CSS as immutable for a year, so the URL has to change whenever the stylesheet does.
