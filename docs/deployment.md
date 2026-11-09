@@ -90,6 +90,38 @@ curl -sI https://andilembele.com/ | grep -iE 'strict|content-security|referrer|s
 curl -s https://andilembele.com/missing | grep -F 'Page not found'
 ```
 
+### Spotify now-playing service
+
+The home page polls `/api/now-playing`, served by `services/now-playing/server.mjs`, a dependency-free Node service on `127.0.0.1:4180`. It is deployed by hand, not by the workflow, because it changes rarely and holds credentials. If it is down, the widget hides.
+
+One-time Spotify setup:
+
+1. Create an app at https://developer.spotify.com/dashboard with the Web API and the redirect URI `http://127.0.0.1:8888/callback`.
+2. Put `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in the local `.env`.
+3. Run `node services/now-playing/authorize.mjs`, open the printed URL, approve, and copy the printed `SPOTIFY_REFRESH_TOKEN`.
+
+Install or update on the server:
+
+```sh
+sudo install -d -m 755 /opt/now-playing
+sudo install -m 644 server.mjs spotify.mjs /opt/now-playing/
+sudo install -m 600 -o root -g root now-playing.env /etc/now-playing.env   # the three SPOTIFY_* lines
+sudo install -m 644 now-playing.service /etc/systemd/system/now-playing.service
+sudo systemctl daemon-reload && sudo systemctl enable --now now-playing
+curl -s http://127.0.0.1:4180/api/now-playing
+```
+
+nginx, inside the `andilembele.com` 443 server block:
+
+```nginx
+location = /api/now-playing {
+    proxy_pass http://127.0.0.1:4180;
+    proxy_set_header Host $host;
+}
+```
+
+Logs: `journalctl -u now-playing`. Revoking access at https://www.spotify.com/account/apps/ invalidates the refresh token; rerun `authorize.mjs` to get a new one.
+
 ## GitHub configuration
 
 The workflow expects these repository settings:

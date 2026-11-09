@@ -33,6 +33,7 @@ npm start
 | Styles | `dist/styles.css`, `dist/blog/blog.css` |
 | Blog and CMS behaviour | `dist/blog/*.js` |
 | Images, résumé, icons | `dist/assets/` |
+| Spotify now-playing widget and service | `dist/now-playing.js`, `services/now-playing/` (deployed by hand; see `docs/deployment.md`) |
 
 `dist/index.html`, `dist/blog/index.html` and `dist/blog-preview.html` are generated from the templates by `npm run build`; don't edit them by hand. `out/` is the full public build and is not committed.
 
