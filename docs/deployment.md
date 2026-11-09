@@ -49,20 +49,34 @@ systemctl reload nginx
 
 ### Error page and security headers
 
-Add these to the `andilembele.com` server block so missing paths get the site's own `404.html` and nginx stops advertising its version. Replace `<FIREBASE_AUTH_DOMAIN>` with the value from `.env`; the admin sign-in popup is framed from it.
+Applied on 2026-11-09. Security headers live in `/etc/nginx/snippets/andilembele-headers.conf`. nginx drops inherited `add_header` lines in any `location` that sets its own (the immutable-cache block for static files does), so the snippet is included both at server level and in that block. Include it in any new location that adds headers.
 
 ```nginx
+# /etc/nginx/sites-available/andilembele.com, inside the 443 server block
 server_tokens off;
 error_page 404 /404.html;
+include /etc/nginx/snippets/andilembele-headers.conf;
 
+location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|pdf)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    include /etc/nginx/snippets/andilembele-headers.conf;
+}
+```
+
+```nginx
+# /etc/nginx/snippets/andilembele-headers.conf
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
 add_header Strict-Transport-Security "max-age=31536000" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN>; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
 ```
 
-nginx drops server-level `add_header` lines inside any `location` block that sets its own headers (the immutable-cache block for static files does), so repeat them there or move them into an `include` used by both.
+`frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`; the admin sign-in popup is framed from it.
 
-The policy starts as `Content-Security-Policy-Report-Only`. Sign in at `/admin/`, save a draft, and browse the home page and blog with the console open; once no violations appear, rename the header to `Content-Security-Policy`. Add `includeSubDomains` to HSTS only after confirming every subdomain serves HTTPS.
+The policy starts as `Content-Security-Policy-Report-Only`. Sign in at `/admin/`, save a draft, and browse the home page and blog with the console open; once no violations appear, rename the header to `Content-Security-Policy` in the snippet. Add `includeSubDomains` to HSTS only after confirming every subdomain serves HTTPS. Run `nginx -t` before every `systemctl reload nginx`.
 
 Check the result with:
 
