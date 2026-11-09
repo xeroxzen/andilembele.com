@@ -76,10 +76,10 @@ add_header X-Content-Type-Options "nosniff" always;
 add_header X-XSS-Protection "1; mode=block" always;
 add_header Strict-Transport-Security "max-age=31536000" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN>; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN> https://open.spotify.com; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
 ```
 
-`frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`; the admin sign-in popup is framed from it.
+`frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`, which frames the admin sign-in popup, and `open.spotify.com` for the footer playlist player.
 
 The policy was verified in report-only mode against admin sign-in and saving, then switched to enforcing on 2026-11-09. Before loosening or tightening it, rename the header to `Content-Security-Policy-Report-Only`, check the console on `/admin/`, home, and blog, then switch back. Add `includeSubDomains` to HSTS only after confirming every subdomain serves HTTPS. Run `nginx -t` before every `systemctl reload nginx`.
 
