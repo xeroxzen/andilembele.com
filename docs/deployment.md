@@ -47,6 +47,30 @@ nginx -t
 systemctl reload nginx
 ```
 
+### Error page and security headers
+
+Add these to the `andilembele.com` server block so missing paths get the site's own `404.html` and nginx stops advertising its version. Replace `<FIREBASE_AUTH_DOMAIN>` with the value from `.env`; the admin sign-in popup is framed from it.
+
+```nginx
+server_tokens off;
+error_page 404 /404.html;
+
+add_header Strict-Transport-Security "max-age=31536000" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN>; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+```
+
+nginx drops server-level `add_header` lines inside any `location` block that sets its own headers (the immutable-cache block for static files does), so repeat them there or move them into an `include` used by both.
+
+The policy starts as `Content-Security-Policy-Report-Only`. Sign in at `/admin/`, save a draft, and browse the home page and blog with the console open; once no violations appear, rename the header to `Content-Security-Policy`. Add `includeSubDomains` to HSTS only after confirming every subdomain serves HTTPS.
+
+Check the result with:
+
+```sh
+curl -sI https://andilembele.com/ | grep -iE 'strict|content-security|referrer|server'
+curl -s https://andilembele.com/missing | grep -F 'Page not found'
+```
+
 ## GitHub configuration
 
 The workflow expects these repository settings:

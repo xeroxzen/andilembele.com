@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { Resvg } from '@resvg/resvg-js';
+import jpeg from 'jpeg-js';
 
 const BASE = new URL('../dist/assets/andile-opengraph.png', import.meta.url);
 const FONTS = ['Medium', 'SemiBold', 'Bold'].map((weight) => fileURLToPath(new URL(`../scripts/fonts/Inter-${weight}.ttf`, import.meta.url)));
@@ -10,6 +11,9 @@ export const ARTICLE_IMAGE = { width: 1200, height: 631 };
 const INK = '#0b0d10', ACCENT = '#0d3d2a', PAPER = '#fdfdfb';
 const LEFT = 94, TEXT_WIDTH = 860, BOLD_CHAR_EM = 0.58, MAX_LINES = 4;
 const SIZES = [96, 80, 68, 58];
+// Link previewers such as WhatsApp drop images much over 300 KB; a 1200px PNG of the portrait card is about 650 KB.
+const JPEG_QUALITY = 84;
+const MAX_CARD_BYTES = 300_000;
 
 const escapeXML = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 
@@ -44,7 +48,13 @@ export function fitTitle(title) {
 function render(base, overlay, fitTo) {
   const href = 'data:image/png;base64,' + base.toString('base64');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${CARD.width}" height="${CARD.height}"><image xlink:href="${href}" width="${CARD.width}" height="${CARD.height}"/>${overlay}</svg>`;
-  return new Resvg(svg, { fitTo, font: { fontFiles: FONTS, loadSystemFonts: false, defaultFontFamily: 'Inter' } }).render().asPng();
+  return new Resvg(svg, { fitTo, font: { fontFiles: FONTS, loadSystemFonts: false, defaultFontFamily: 'Inter' } }).render();
+}
+
+function toJpeg(image) {
+  const { data } = jpeg.encode({ data: image.pixels, width: image.width, height: image.height }, JPEG_QUALITY);
+  assert.ok(data.length <= MAX_CARD_BYTES, `Share card is ${data.length} bytes, over the ${MAX_CARD_BYTES}-byte preview limit`);
+  return data;
 }
 
 const eyebrow = (text, y) => `<text x="${LEFT}" y="${y}" font-family="Inter" font-weight="600" font-size="28" letter-spacing="5" fill="${ACCENT}">${escapeXML(text.toUpperCase())}</text>`;
@@ -54,11 +64,18 @@ const eyebrow = (text, y) => `<text x="${LEFT}" y="${y}" font-family="Inter" fon
  */
 export async function renderSiteCard({ role, focus }) {
   const overlay = `<rect x="80" y="215" width="880" height="55" fill="${PAPER}"/><rect x="80" y="590" width="890" height="65" fill="${PAPER}"/>${eyebrow(role, 252)}<text x="${LEFT}" y="636" font-family="Inter" font-weight="500" font-size="38" fill="${INK}">${escapeXML(focus)}</text>`;
-  return render(await readFile(BASE), overlay, { mode: 'original' });
+  return render(await readFile(BASE), overlay, { mode: 'original' }).asPng();
 }
 
 /**
- * Article card: the shared card's portrait and marks, with the article title in place of the name.
+ * The shared card at preview size, encoded as JPEG for link previews.
+ */
+export async function renderSiteCardJpeg() {
+  return toJpeg(render(await readFile(BASE), '', { mode: 'width', value: ARTICLE_IMAGE.width }));
+}
+
+/**
+ * Article card: the shared card's portrait and marks, with the article title in place of the name, as JPEG.
  */
 export async function renderArticleCard({ title, label }) {
   assert.ok(title.trim(), 'renderArticleCard: title is required');
@@ -67,5 +84,5 @@ export async function renderArticleCard({ title, label }) {
   const top = Math.round(454 - (lines.length * lineHeight) / 2 + size * 0.45);
   const tspans = lines.map((line, i) => `<tspan x="${LEFT}" y="${top + i * lineHeight}">${escapeXML(line)}</tspan>`).join('');
   const overlay = `<rect x="60" y="200" width="925" height="480" fill="${PAPER}"/>${eyebrow(label, top - size - 22)}<text font-family="Inter" font-weight="700" font-size="${size}" letter-spacing="-2" fill="${INK}">${tspans}</text>`;
-  return render(await readFile(BASE), overlay, { mode: 'width', value: ARTICLE_IMAGE.width });
+  return toJpeg(render(await readFile(BASE), overlay, { mode: 'width', value: ARTICLE_IMAGE.width }));
 }

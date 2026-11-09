@@ -9,6 +9,8 @@ const reading=p=>`${Math.max(1,Math.ceil(p.content.trim().split(/\s+/).length/20
 async function api(url,options){if(remote&&url.startsWith('/api/'))return cloud.request(url,options);const r=await fetch(url,options);const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
 const meta=p=>`${e(dateLabel(p.date))} · ${p.source==='Medium'?'Medium':reading(p)}${p.tags.length?' · '+p.tags.map(e).join(', '):''}`;
 function article(p){return `${p.coverImage?`<img class="cover" src="${e(p.coverImage)}" alt="">`:''}<p class="eyebrow">${meta(p)}</p><h1>${e(p.title)}</h1>${p.excerpt?`<p class="lead">${e(p.excerpt)}</p>`:''}<div class="prose">${markdown(p.content)}</div>`;}
+// The shell answers several addresses, so its canonical link is set here rather than at build time.
+function canonical(path){let link=document.querySelector('link[rel="canonical"]');if(!link){link=document.createElement('link');link.rel='canonical';document.head.append(link);}link.href=location.origin+path;}
 async function publicPage(){
  const preview=document.body.dataset.preview==='true';
  const slug=preview?'':new URLSearchParams(location.search).get('post')||location.pathname.split('/')[2];
@@ -24,7 +26,9 @@ async function publicPage(){
   document.title=`${post.title} · Andile Jaden Mbele`;
   // Prerendered posts carry per-article link-preview tags at /blog/<slug>/, so that is the address worth sharing.
   const pretty='/blog/'+post.slug+'/';
-  if(location.pathname!==pretty&&(document.body.dataset.pages||'').split(' ').includes(post.slug))history.replaceState(null,'',pretty+location.hash);
+  const prerendered=(document.body.dataset.pages||'').split(' ').includes(post.slug);
+  if(location.pathname!==pretty&&prerendered)history.replaceState(null,'',pretty+location.hash);
+  canonical(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
   app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div><nav id="related" aria-label="More writing"></nav></section>`;
   document.querySelector('meta[name="description"]').content=post.excerpt;
   const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
@@ -32,7 +36,7 @@ async function publicPage(){
   document.querySelector('#copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser.';}};
   document.querySelector('#related').innerHTML='<h2 class="small-heading">More writing</h2>'+archive(posts.filter(p=>p!==post).slice(0,2));return;
  }
- app.innerHTML=indexMarkup(posts);
+ app.innerHTML=indexMarkup(posts);canonical('/blog/');
  if(!preview&&results.some(r=>r.status==='rejected')){const notice=document.createElement('p');notice.className='notice';notice.textContent='Some articles could not be loaded. The available writing is shown below.';document.querySelector('#latest').before(notice);}
  const search=document.querySelector('#search'),topic=document.querySelector('#topic'),source=document.querySelector('#source'),more=document.querySelector('#more'),reset=document.querySelector('#reset-filters');
  const params=new URLSearchParams(location.search);search.value=params.get('q')||'';topic.value=params.get('topic')||'';source.value=params.get('source')||'';let limit=6;

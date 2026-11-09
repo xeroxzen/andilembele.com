@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /blog/admin/
+
+Sitemap: https://andilembele.com/sitemap.xml
