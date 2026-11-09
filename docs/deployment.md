@@ -57,6 +57,11 @@ server_tokens off;
 error_page 404 /404.html;
 include /etc/nginx/snippets/andilembele-headers.conf;
 
+# The resume was renamed; keep old links and search results working.
+location = /assets/Andile_Mbele_Resume.pdf {
+    return 301 /assets/Andile_Mbele.pdf;
+}
+
 location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|pdf)$ {
     expires 1y;
     add_header Cache-Control "public, immutable";
