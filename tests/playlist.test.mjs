@@ -21,7 +21,7 @@ test('player only embeds well-formed Spotify playlist IDs',()=>{
 test('every public page with the footer loads the player script',async()=>{
  for(const page of ['out/index.html','out/blog/index.html']){
   const html=await readFile(new URL('../'+page,import.meta.url),'utf8');
-  assert.match(html,/<script type="module" src="\/playlist.js"><\/script>/,page);
+  assert.match(html,/<script type="module" src="\/playlist\.js\?v=[0-9a-f]{10}"><\/script>/,page);
  }
  await readFile(new URL('../out/playlist.js',import.meta.url));
 });

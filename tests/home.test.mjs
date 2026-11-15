@@ -37,3 +37,14 @@ test('home stylesheet URL carries a hash of the stylesheet so immutable caches r
  const home=await readFile(new URL('../out/index.html',import.meta.url),'utf8');
  assert.ok(home.includes(`href="/styles.css?v=${version}"`));
 });
+test('every built page links scripts and stylesheets by a hash of their contents',async()=>{
+ const {createHash}=await import('node:crypto');
+ const out=new URL('../out/',import.meta.url);
+ const hash=async path=>createHash('sha256').update(await readFile(new URL(path,out))).digest('hex').slice(0,10);
+ for(const page of ['index.html','blog/index.html','admin/index.html','404.html']){
+  const html=await readFile(new URL(page,out),'utf8');
+  const refs=[...html.matchAll(/(?:src|href)="\/?([\w/-]+\.(?:js|css))(\?v=[^"]*)?"/g)];
+  assert.ok(refs.length>0,page);
+  for(const [,path,query] of refs)assert.equal(query,'?v='+await hash(path),`${page} links ${path} without its current hash`);
+ }
+});
