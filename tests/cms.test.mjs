@@ -9,3 +9,22 @@ assert.equal((await fetch(base+'/api/admin/media',{method:'POST',headers:{Origin
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');const media=await (await fetch(base+'/api/admin/media',{method:'POST',headers:{Origin:base,'X-CMS-Token':token},body:png})).json();assert.match(media.url,/^\/media\//);assert.equal((await fetch(base+media.url)).status,200);assert.equal((await fetch(base+'/data/posts.json')).status,404);assert.equal((await fetch(base+'/blog/admin')).status,200);
 }finally{await rm(dir,{recursive:true,force:true});}});
 test('Markdown escapes HTML, blocks active URLs and renders authoring extensions',()=>{const output=markdown('<script>alert(1)</script>\n\n[x](javascript:alert)\n\n:::stat\nlabel: Scale\nvalue: 40\nnote: Context\n:::');assert.ok(!output.includes('<script>'));assert.ok(!output.includes('href="javascript:'));assert.ok(output.includes('blog-stat'));assert.ok(output.includes('<strong>40</strong>'));assert.ok(markdown('```\n<b>raw</b>\n```').includes('&lt;b&gt;'));});
+test('Markdown renders tables, highlighted code, multi-line quotes and nested lists',()=>{
+ const table=markdown('| Case | Result |\n| --- | :---: |\n| `a\\|b` | **kept** |');
+ assert.ok(table.includes('<table><thead><tr><th>Case</th><th style="text-align:center">Result</th></tr></thead>'));
+ assert.ok(table.includes('<td><code>a|b</code></td>'));
+ const code=markdown('```rust\nlet s = "<b>"; // note\n```');
+ assert.ok(code.startsWith('<pre data-lang="rust"><code class="language-rust"><span class="tok-keyword">let</span>'));
+ assert.ok(code.includes('<span class="tok-string">&quot;&lt;b&gt;&quot;</span>'));
+ assert.ok(code.includes('<span class="tok-comment">// note</span>'));
+ assert.equal(markdown('```"><script>\nx\n```'),'<pre data-lang="script"><code class="language-script">x</code></pre>');
+ assert.equal(markdown('> one\n> two\n>\n> three'),'<blockquote><p>one<br>two</p><p>three</p></blockquote>');
+ assert.equal(markdown('- a\n    - b\n1. c'),'<ul><li>a<ul><li>b</li></ul></li></ul><ol><li>c</li></ol>');
+ assert.equal(markdown('`**x**` **y**'),'<p><code>**x**</code> <strong>y</strong></p>');
+ assert.equal(markdown('text\n\n---'),'<p>text</p><hr>');
+});
+test('Markdown turns alert quotes into callouts and leaves plain quotes alone',()=>{
+ assert.equal(markdown('> [!WARNING]\n> Back up **first**.'),'<aside class="callout callout-warning"><p class="callout-title">Warning</p><p>Back up <strong>first</strong>.</p></aside>');
+ assert.equal(markdown('> [!tip] Faster builds\n> Use the cache.'),'<aside class="callout callout-tip"><p class="callout-title">Faster builds</p><p>Use the cache.</p></aside>');
+ assert.equal(markdown('> [!OTHER] x'),'<blockquote><p>[!OTHER] x</p></blockquote>');
+});
