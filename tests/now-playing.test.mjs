@@ -74,6 +74,6 @@ test('widget describes playing and last-played tracks and ignores untrusted link
 test('home page ships the widget and the public build includes its script',async()=>{
  const home=await readFile(new URL('../out/index.html',import.meta.url),'utf8');
  assert.match(home,/<div class="now-playing" id="now-playing" hidden><\/div>/);
- assert.match(home,/<script type="module" src="\/now-playing.js"><\/script>/);
+ assert.match(home,/<script type="module" src="\/now-playing\.js\?v=[0-9a-f]{10}"><\/script>/);
  await readFile(new URL('../out/now-playing.js',import.meta.url));
 });

@@ -57,7 +57,7 @@ test('templates and built pages use dynamic current instead of a Contact-only pi
  for(const page of ['templates/home.html','templates/blog.html','dist/index.html','dist/blog/index.html','out/index.html','out/blog/index.html']){
   const html=await read(page);
   assert.equal(html.includes('nav-contact'),false,page+' still hardcodes Contact');
-  assert.match(html,/src="\/nav\.js"/,page+' must load the section nav script');
+  assert.match(html,/src="\/nav\.js(\?v=[0-9a-f]{10})?"/,page+' must load the section nav script');
  }
  const home=await read('templates/home.html');
  const blog=await read('templates/blog.html');
