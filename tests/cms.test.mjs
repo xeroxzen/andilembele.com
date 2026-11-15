@@ -28,3 +28,23 @@ test('Markdown turns alert quotes into callouts and leaves plain quotes alone',(
  assert.equal(markdown('> [!tip] Faster builds\n> Use the cache.'),'<aside class="callout callout-tip"><p class="callout-title">Faster builds</p><p>Use the cache.</p></aside>');
  assert.equal(markdown('> [!OTHER] x'),'<blockquote><p>[!OTHER] x</p></blockquote>');
 });
+test('Notion Markdown exports import with their title, callouts, tables and code intact',async()=>{
+ const {importMarkdown}=await import('../dist/blog/markdown.js');
+ const exported='\uFEFF# Building Ferrite\r\n\r\nIntro.\r\n\r\n<aside>\r\n💡 Ferrite is **alpha**.\r\n\r\n</aside>\r\n\r\n| A | B |\r\n| --- | --- |\r\n| one<br>two | `x` |\r\n\r\n```plain text\r\nraw\r\n```';
+ const {title,content}=importMarkdown(exported);
+ assert.equal(title,'Building Ferrite');
+ assert.ok(content.startsWith('Intro.'));
+ const html=markdown(content);
+ assert.ok(html.includes('<aside class="callout callout-note"><span class="callout-icon" aria-hidden="true">💡</span><div><p>Ferrite is <strong>alpha</strong>.</p></div></aside>'));
+ assert.ok(html.includes('<td>one<br>two</td><td><code>x</code></td>'));
+ assert.ok(html.endsWith('<pre><code>raw</code></pre>'));
+ assert.ok(!markdown('<aside>\n<script>x</script>\n</aside>').includes('<script>'));
+ assert.equal(importMarkdown('Body only').title,'');
+});
+test('images from an export are found by path and relinked to their uploaded addresses',async()=>{
+ const {localImagePaths,relinkImages}=await import('../dist/blog/markdown.js');
+ const body='![a](My%20Page/image.png)\n![b](https://example.com/x.png)\n![c](My%20Page/image.png)\n![d](other.webp)';
+ assert.deepEqual(localImagePaths(body),['My Page/image.png','other.webp']);
+ const urls=new Map([['My Page/image.png','https://cdn.test/1.png']]);
+ assert.equal(relinkImages(body,urls),'![a](https://cdn.test/1.png)\n![b](https://example.com/x.png)\n![c](https://cdn.test/1.png)\n![d](other.webp)');
+});

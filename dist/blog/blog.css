@@ -79,6 +79,7 @@ body>.page>main{flex:1}body>.page>footer{margin-top:auto}
 /* Callouts: tinted block with a coloured edge and a labelled title. */
 .prose .callout{--tone:#1f5ea8;margin:0 0 1em;padding:.9em 1.1em;border-radius:8px;border-left:3px solid var(--tone);background:color-mix(in srgb,var(--tone) 9%,transparent)}
 .prose .callout>:last-child{margin-bottom:0}
+.prose .callout:has(>.callout-icon){display:flex;gap:.7em;--tone:var(--muted);border-left:0;background:var(--code-bg)}.prose .callout-icon{flex:none;font-size:1.2em;line-height:1.4}.prose .callout>div{min-width:0;flex:1}.prose .callout>div>:last-child{margin-bottom:0}
 .prose .callout-title{margin-bottom:.35em;font-weight:650;font-size:.9em;color:var(--tone)}
 .prose .callout-tip{--tone:#1c7a3a}.prose .callout-important{--tone:#8839c4}.prose .callout-warning{--tone:#a86500}.prose .callout-caution{--tone:#c4372f}
 @media(prefers-color-scheme:dark){.prose .callout{--tone:#61afef}.prose .callout-tip{--tone:#98c379}.prose .callout-important{--tone:#c678dd}.prose .callout-warning{--tone:#e5a54b}.prose .callout-caution{--tone:#ff8b80}}

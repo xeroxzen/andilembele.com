@@ -7,7 +7,7 @@ const MD_MAX_DEPTH=8;
 function inline(s){
  const codes=[];
  const text=escapeHTML(String(s).replace(/\u0000/g,'')).replace(/`([^`]+)`/g,(_,c)=>{codes.push(c);return `\u0000${codes.length-1}\u0000`;});
- return text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/~~([^~]+)~~/g,'<del>$1</del>').replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<img loading="lazy" src="${u}" alt="${a}">`:a).replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<a href="${u}" rel="noopener noreferrer">${a}</a>`:a).replace(/\u0000(\d+)\u0000/g,(_,n)=>`<code>${codes[Number(n)]}</code>`);
+ return text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/~~([^~]+)~~/g,'<del>$1</del>').replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<img loading="lazy" src="${u}" alt="${a}">`:a).replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<a href="${u}" rel="noopener noreferrer">${a}</a>`:a).replace(/&lt;br\s*\/?&gt;/gi,'<br>').replace(/\u0000(\d+)\u0000/g,(_,n)=>`<code>${codes[Number(n)]}</code>`);
 }
 const mdHashComments=/^(py|python|sh|bash|shell|zsh|console|yaml|yml|toml|ruby|rb|r|dockerfile|makefile|nginx|ini|conf)$/;
 const mdKeywords=new Set('as async await break case catch class const continue crate def default defer del do done elif else enum esac except export extends false fi fn for from func if impl import in interface let loop match mod move mut new nil None not null or package pass pub raise ref return self Self static struct super switch then throw trait true True False try type typeof use var where while with yield'.split(' '));
@@ -27,7 +27,7 @@ const mdRule=/^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
 const mdHr=/^\s{0,3}([-*_])(\s*\1){2,}\s*$/;
 const mdCells=l=>l.trim().replace(/^\|/,'').replace(/(?<!\\)\|$/,'').split(/(?<!\\)\|/).map(c=>c.trim().replace(/\\\|/g,'|'));
 const mdIsTable=(lines,i)=>lines[i].includes('|')&&i+1<lines.length&&lines[i+1].includes('-')&&lines[i+1].includes('|')&&mdRule.test(lines[i+1]);
-const mdBlockStart=(lines,i)=>/^(#{1,6}\s|>|```|:::)/.test(lines[i])||mdHr.test(lines[i])||mdItem.test(lines[i])||mdIsTable(lines,i);
+const mdBlockStart=(lines,i)=>/^(#{1,6}\s|>|```|:::|<aside>\s*$)/.test(lines[i])||mdHr.test(lines[i])||mdItem.test(lines[i])||mdIsTable(lines,i);
 function mdTable(rows){
  const head=mdCells(rows[0]),align=mdCells(rows[1]).map(c=>c.endsWith(':')?(c.startsWith(':')?'center':'right'):'');
  const cell=(tag,text,k)=>`<${tag}${align[k]?` style="text-align:${align[k]}"`:''}>${inline(text)}</${tag}>`;
@@ -59,6 +59,38 @@ function mdQuote(lines,depth){
  const kind=m[1].toLowerCase();
  return `<aside class="callout callout-${kind}"><p class="callout-title">${inline(m[2]||mdCallouts[kind])}</p>${markdown(lines.slice(1).join('\n'),depth+1)}</aside>`;
 }
+// Notion labels unhighlighted code "Plain Text"; treat it, and similar names, as no language.
+const mdLangAliases={plaintext:'',text:'',plain:'',txt:''};
+function mdLang(info){
+ const lang=info.trim().toLowerCase().replace(/[^a-z0-9+#-]/g,'');
+ return lang in mdLangAliases?mdLangAliases[lang]:lang;
+}
+// Notion exports callouts as <aside> blocks whose first line starts with the page icon (an emoji or an <img> tag).
+function mdAside(lines,depth){
+ const body=lines.join('\n').trim().replace(/^<img\b[^>]*>\s*/i,'');
+ const icon=body.match(/^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)\s*/u);
+ const rest=icon?body.slice(icon[0].length):body;
+ return `<aside class="callout callout-note">${icon?`<span class="callout-icon" aria-hidden="true">${escapeHTML(icon[1])}</span>`:''}<div>${markdown(rest,depth+1)}</div></aside>`;
+}
+// A Notion export opens with the page title as "# Title"; the post already shows its title, so it moves to the title field.
+export function importMarkdown(text){
+ const lines=text.replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n');
+ const first=lines.findIndex(l=>l.trim());
+ const title=first>=0?lines[first].match(/^#\s+(.+?)\s*$/):null;
+ const raw=lines.join('\n');
+ if(!title)return {title:'',content:raw,raw};
+ return {title:title[1],content:lines.slice(first+1).join('\n').replace(/^\n+/,''),raw};
+}
+// Image references that point at files rather than web addresses, decoded the way a browser would resolve them.
+const mdImageRef=/!\[([^\]]*)\]\(([^)\s]+)\)/g;
+export function localImagePaths(content){
+ const paths=new Set();
+ for(const m of content.matchAll(mdImageRef))if(!safeURL(m[2])){try{paths.add(decodeURIComponent(m[2]));}catch{paths.add(m[2]);}}
+ return [...paths];
+}
+export function relinkImages(content,urls){
+ return content.replace(mdImageRef,(whole,alt,path)=>{let key=path;try{key=decodeURIComponent(path);}catch{}return urls.has(key)?`![${alt}](${urls.get(key)})`:whole;});
+}
 // A list runs through nested and continuation lines, and stops at a sibling item of the other kind (bullets vs numbers).
 function mdListEnd(lines,start){
  const first=lines[start].match(mdItem),base=first[1].length,ordered=/\d/.test(first[2]);
@@ -69,12 +101,13 @@ function mdListEnd(lines,start){
 }
 export function markdown(input,depth=0){
  if(depth>MD_MAX_DEPTH)return `<p>${inline(input)}</p>`;
- const lines=input.replace(/\r/g,'').split('\n');let html='',i=0;
+ const lines=input.replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n');let html='',i=0;
  while(i<lines.length){let line=lines[i++];if(!line.trim())continue;
- if(line.startsWith('```')){const lang=line.slice(3).trim().toLowerCase().replace(/[^a-z0-9+#-]/g,'');let block=[];while(i<lines.length&&!lines[i].startsWith('```'))block.push(lines[i++]);i++;html+=`<pre${lang?` data-lang="${lang}"`:''}><code${lang?` class="language-${lang}"`:''}>${mdHighlight(block.join('\n'),lang)}</code></pre>`;continue;}
+ if(line.startsWith('```')){const lang=mdLang(line.slice(3));let block=[];while(i<lines.length&&!lines[i].startsWith('```'))block.push(lines[i++]);i++;html+=`<pre${lang?` data-lang="${lang}"`:''}><code${lang?` class="language-${lang}"`:''}>${mdHighlight(block.join('\n'),lang)}</code></pre>`;continue;}
  if(/^:::(lede|stat|sources)$/.test(line)){const kind=line.slice(3),block=[];while(i<lines.length&&lines[i]!==':::')block.push(lines[i++]);i++;
  if(kind==='stat'){const fields=Object.fromEntries(block.map(l=>{let n=l.indexOf(':');return [l.slice(0,n).trim(),l.slice(n+1).trim()]}));html+=`<aside class="blog-stat"><span>${inline(fields.label||'')}</span><strong>${inline(fields.value||'')}</strong><p>${inline(fields.note||'')}</p></aside>`;}
  else html+=`<div class="blog-${kind}">${markdown(block.join('\n'),depth+1)}</div>`;continue;}
+ if(line.trim()==='<aside>'){const block=[];while(i<lines.length&&lines[i].trim()!=='</aside>')block.push(lines[i++]);i++;html+=mdAside(block,depth);continue;}
  const h=line.match(/^(#{1,6})\s+(.+?)(?:\s+#+)?\s*$/);if(h){const n=Math.min(6,h[1].length+1);html+=`<h${n}>${inline(h[2])}</h${n}>`;continue;}
  if(mdHr.test(line)){html+='<hr>';continue;}
  if(line.startsWith('>')){const block=[line];while(i<lines.length&&lines[i].startsWith('>'))block.push(lines[i++]);html+=mdQuote(block.map(l=>l.replace(/^> ?/,'')),depth);continue;}

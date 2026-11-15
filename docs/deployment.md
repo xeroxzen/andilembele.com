@@ -76,7 +76,7 @@ add_header X-Content-Type-Options "nosniff" always;
 add_header X-XSS-Protection "1; mode=block" always;
 add_header Strict-Transport-Security "max-age=31536000" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN> https://open.spotify.com; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN> https://open.spotify.com; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
 ```
 
 `frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`, which frames the admin sign-in popup, and `open.spotify.com` for the footer playlist player.
@@ -156,3 +156,12 @@ Point `current` at any retained release; nginx follows the symlink without a rel
 ```sh
 ln -sfn /var/www/andilembele-releases/releases/<git-sha> /var/www/andilembele-releases/current
 ```
+
+## Post images (Firebase Storage)
+
+The editor uploads post images to Firebase Storage under `posts/`. One-time setup:
+
+1. Enable Storage in the Firebase console (new buckets require the Blaze plan).
+2. If the bucket is not `<project-id>.firebasestorage.app`, set `FIREBASE_STORAGE_BUCKET` in `.env` and as a repository secret.
+3. Generate and deploy the rules: `npm run build:rules`, then `firebase deploy --only storage`.
+4. Add `https://firebasestorage.googleapis.com` to `connect-src` in the CSP snippet above, then `nginx -t && systemctl reload nginx`. Images themselves load under the existing `img-src https:`.

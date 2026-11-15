@@ -3,6 +3,7 @@ import {parseBackup} from './backup.js';
 import {initializeApp} from 'firebase/app';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,browserSessionPersistence,setPersistence} from 'firebase/auth';
 import {getFirestore,collection,doc,getDocs,query,where,runTransaction,deleteDoc} from 'firebase/firestore';
+import {getStorage,ref,uploadBytes,getDownloadURL} from 'firebase/storage';
 /**
  * Firebase web values are injected by esbuild from .env at `npm run build:sites`.
  * They still ship in the public CMS bundle; restrict authorized domains in Firebase.
@@ -13,11 +14,13 @@ const config={
  projectId:process.env.FIREBASE_PROJECT_ID,
  appId:process.env.FIREBASE_APP_ID,
  messagingSenderId:process.env.FIREBASE_MESSAGING_SENDER_ID,
+ storageBucket:process.env.FIREBASE_STORAGE_BUCKET||`${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
 };
 if(!config.apiKey||!config.authDomain||!config.projectId||!config.appId)throw Error('Firebase web config was not injected at build time.');
 const allowedEmails=String(process.env.CMS_ADMIN_EMAILS||'').split(',').map(email=>email.trim().toLowerCase()).filter(Boolean);
 if(!allowedEmails.length)throw Error('CMS admin allowlist was not injected at build time.');
-const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);
+const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);
+const IMAGE_TYPES={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'},MAX_IMAGE_BYTES=5*1024*1024;
 await setPersistence(auth,browserSessionPersistence);
 await auth.authStateReady();
 const allowed=()=>auth.currentUser?.emailVerified&&allowedEmails.includes(auth.currentUser.email?.toLowerCase())&&auth.currentUser.providerData.some(p=>p.providerId==='google.com');
@@ -39,7 +42,14 @@ export async function request(url,options={}){
   const posts=parseBackup(options.body);
   await restorePosts(db,posts);return {count:posts.length};
  }
- if(url==='/api/admin/media')throw Error('Image uploads are not enabled yet. Text posts can be published now.');
+ if(url==='/api/admin/media'&&method==='POST'){
+  const file=options.body,ext=IMAGE_TYPES[file.type];
+  if(!ext)throw Error(`${file.name||'That file'} is not a PNG, JPEG, or WebP image.`);
+  if(file.size>MAX_IMAGE_BYTES)throw Error(`${file.name||'That image'} is larger than 5 MB.`);
+  const target=ref(storage,`posts/${crypto.randomUUID()}.${ext}`);
+  await uploadBytes(target,file,{contentType:file.type,cacheControl:'public, max-age=31536000, immutable'});
+  return {url:await getDownloadURL(target)};
+ }
  if(url.startsWith('/api/admin/posts/')&&method==='DELETE'){await deleteDoc(doc(db,'posts',decodeURIComponent(url.split('/').pop())));return {ok:true};}
  if(url==='/api/admin/posts'&&method==='POST'){
   const {post,originalSlug}=JSON.parse(options.body);

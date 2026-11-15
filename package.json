@@ -14,7 +14,7 @@
     "predev": "npm run build",
     "pretest": "npm run build:sites",
     "build:rules": "node scripts/build-rules.mjs",
-    "test:rules": "npm run build:rules && firebase emulators:exec --only firestore --project demo-andile-cms \"node --test firebase/rules.test.mjs\""
+    "test:rules": "npm run build:rules && firebase emulators:exec --only firestore,storage --project demo-andile-cms \"node --test firebase/rules.test.mjs firebase/storage.rules.test.mjs\""
   },
   "type": "module",
   "dependencies": {
