@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Enhancing Negotiation or Replacing Diplomats?",
+    "event": "Southern African Young Diplomats Summit keynote",
+    "year": "2026",
+    "url": "https://www.linkedin.com/feed/update/urn:li:activity:7462032383765139456/",
+    "image": "/assets/talks/sayd-ai-diplomacy-2026",
+    "alt": "Andile speaking at the Southern African Young Diplomats Summit",
+    "width": 480,
+    "height": 720
+  },
+  {
+    "title": "Making voice notes searchable",
+    "event": "PyCon Africa",
+    "year": "2025",
+    "url": "https://www.linkedin.com/posts/pyconafrica_python-ai-whisper-activity-7381993670603878400-SjbO",
+    "image": "/assets/talks/pycon-africa-2025",
+    "alt": "Andile presenting EchoFind at a lectern at PyCon Africa",
+    "width": 800,
+    "height": 1066
+  },
+  {
+    "title": "Building a Flavourful WhatsApp Chat Analysis Tool",
+    "event": "PyCon Zimbabwe",
+    "year": "2024",
+    "url": "https://www.linkedin.com/posts/pycon-zimbabwe_meet-our-speaker-andile-jaden-mbele-we-activity-7255597741681119234-0CTK",
+    "image": "/assets/talks/pycon-zimbabwe-2024",
+    "alt": "PyCon Zimbabwe speaker announcement for Andile Mbele's WhatsApp chat analysis talk",
+    "width": 1080,
+    "height": 1080
+  }
+]

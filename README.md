@@ -24,18 +24,26 @@ npm start
 
 | Change | Edit |
 | --- | --- |
-| Home page content and layout | `templates/home.html` |
+| Name, positioning, roles open to, proof strip, principles, skills | `content/site.json` |
+| Projects (one Markdown file each; case-study sections must follow the template order) | `content/projects/*.md` |
+| Timeline, talks, Now page | `content/timeline.json`, `content/talks.json`, `content/now.json` |
+| Content schemas and validation | `lib/content.mjs` |
+| Pages | `components/pages.mjs` |
+| Building blocks (callouts, toggles, pills, gallery cards) and database views | `components/blocks.mjs`, `components/database.mjs` |
+| Header, navigation, ⌘K palette and `/` menu | `components/layout.mjs` |
+| Line-art illustrations | `components/illustrations.mjs` |
 | Blog page layout | `templates/blog.html` |
 | Footer and social links | `components/footer.mjs` |
 | Link-preview tags, canonical links, structured data | `components/social-meta.mjs` |
-| Share-card images | `components/og-image.mjs` (source image `dist/assets/andile-opengraph.png`) |
+| Share-card images | `components/og-image.mjs` |
 | `robots.txt`, `sitemap.xml`, RSS feed | `components/crawl-files.mjs` |
-| Styles | `dist/styles.css`, `dist/blog/blog.css` |
+| Styles and design tokens | `dist/styles.css`, `dist/blog/blog.css` |
+| Browser code (menus, theme, database views, motion, widgets) | `src/client/*.js`, bundled to `/site.js` |
 | Blog and CMS behaviour | `dist/blog/*.js` |
-| Images, résumé, icons | `dist/assets/` |
-| Spotify now-playing widget and service | `dist/now-playing.js`, `services/now-playing/` (deployed by hand; see `docs/deployment.md`) |
+| Images, résumé, icons, fonts | `dist/assets/` |
+| Spotify now-playing widget and service | `src/client/now-playing.js`, `services/now-playing/` (deployed by hand; see `docs/deployment.md`) |
 
-`dist/index.html`, `dist/blog/index.html` and `dist/blog-preview.html` are generated from the templates by `npm run build`; don't edit them by hand. `out/` is the full public build and is not committed.
+Every page except the blog is generated from `content/` by `npm run build`, which fails if a content file breaks its schema. The generated HTML in `dist/` and `dist/site.js` should not be edited by hand. `out/` is the full public build and is not committed.
 
 ## Builds
 

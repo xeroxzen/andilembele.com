@@ -1,0 +1,125 @@
+{
+  "name": "Andile Jaden Mbele",
+  "role": "Software Engineer",
+  "status": "Open to software, data, DevOps and security roles",
+  "positioning": "I build secure, data-heavy systems — from 40B-record pipelines to AI tooling.",
+  "highlight": [
+    "secure"
+  ],
+  "summary": "Software engineer working in Go, Python, TypeScript and Rust across security, data, infrastructure and AI. CEO of Vectra Dynamics and CTO of Optimeer Labs.",
+  "about": [
+    "I turn recurring engineering work into platforms: the systems, automation, and observability that help teams ship faster without trading away reliability.",
+    "Most of how I build comes from a short shelf of books, a longer stack of papers, and systems that broke in production. Right now that means distributed systems and evals for AI agents.",
+    "Self-taught. I love engineering, code, coffee, data and rockets."
+  ],
+  "email": "andilembele020@gmail.com",
+  "availability": "Open to full-time and contract work as a Software, Data, DevOps, or AI systems engineer, a Threat Intelligence Analyst, or a founding engineer, from Senior to Principal. Also consulting, speaking, and advising early-stage teams.",
+  "openTo": [
+    {
+      "title": "Software Engineer",
+      "focus": "Senior to Principal. Backend, platform, and product engineering in Go, Python, TypeScript, and Rust.",
+      "evidence": "Built Atlas, which seats nearly 2,000 people across three countries, and cut its page loads from 15–20 API calls to one or two."
+    },
+    {
+      "title": "Data Engineer",
+      "focus": "Pipelines and data platforms for data too large or too messy for off-the-shelf tools.",
+      "evidence": "Built pipelines that moved 40B+ records, with streaming, encoding recovery, and schema normalisation across SQL, JSON, CSV, and XML."
+    },
+    {
+      "title": "DevOps Engineer",
+      "focus": "Cloud infrastructure, CI/CD, and the automation that keeps deploys boring.",
+      "evidence": "Operated a four-region AWS platform of 37 ECS services and 50+ repositories, with the deployment, inventory, and alerting automation around it."
+    },
+    {
+      "title": "Threat Intelligence Analyst",
+      "focus": "Advisories, attack surface, and email security, backed by tools I write.",
+      "evidence": "Sentinel matches GHSA, OSV, NVD, and CISA KEV against every SBOM and surfaced 5,000+ findings; domainwatch, spoofscore, and dmarc-ready show what attackers see."
+    },
+    {
+      "title": "AI systems engineer",
+      "focus": "Agents, retrieval, and evals that hold up in production.",
+      "evidence": "Rumi narrows 4,600 postings a day to a shortlist for under a dollar a run. Now building a public benchmark of agentic software-engineering tasks."
+    },
+    {
+      "title": "Founding or early engineer",
+      "focus": "Security, data, or AI teams going from zero to one.",
+      "evidence": "Founding Engineer at TraceGraph, CEO of Vectra Dynamics, and CTO of Optimeer Labs."
+    }
+  ],
+  "resumePdf": "/assets/Andile_Mbele.pdf",
+  "proof": [
+    {
+      "value": "40B+",
+      "label": "records through pipelines I have built"
+    },
+    {
+      "value": "POTRAZ",
+      "label": "Award 2022 · grant 2025"
+    },
+    {
+      "value": "PyCon Africa",
+      "label": "Speaker, 2025"
+    }
+  ],
+  "principles": [
+    {
+      "title": "Turn repeated work into a platform",
+      "body": "When a team does the same thing for the third time, I build the system, automation, or check that does it for them.",
+      "source": "The Pragmatic Programmer"
+    },
+    {
+      "title": "Design for how data is read",
+      "body": "Reliability and speed come from the shape of the data and its access paths. Atlas got fast when the API matched the screen, not the tables.",
+      "source": "Designing Data-Intensive Applications"
+    },
+    {
+      "title": "Every claim links to evidence",
+      "body": "A number, an incident, or a verdict should trace back to the record it came from, so anyone can check it. TraceGraph and Rumi are both built on that.",
+      "source": "Hoare, An Axiomatic Basis for Computer Programming"
+    }
+  ],
+  "awards": [
+    {
+      "year": "2022",
+      "title": "POTRAZ award"
+    },
+    {
+      "year": "2025",
+      "title": "POTRAZ grant"
+    }
+  ],
+  "skills": [
+    {
+      "group": "Languages",
+      "items": [
+        "Go",
+        "Python",
+        "TypeScript",
+        "Rust",
+        "JavaScript"
+      ]
+    },
+    {
+      "group": "Infrastructure and data",
+      "items": [
+        "AWS",
+        "Terraform",
+        "PostgreSQL",
+        "Redis",
+        "Elasticsearch",
+        "Git"
+      ]
+    },
+    {
+      "group": "Frameworks",
+      "items": [
+        "FastAPI",
+        "Next.js",
+        "React",
+        "Vue",
+        "Flask",
+        "Node.js"
+      ]
+    }
+  ]
+}

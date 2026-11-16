@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {renderFooter,playlist} from '../components/footer.mjs';
-import {embedURL} from '../dist/playlist.js';
+import {embedURL} from '../src/client/playlist.js';
 
 test('footer links to the playlist so it works without JavaScript',()=>{
  const footer=renderFooter();
@@ -18,10 +18,11 @@ test('player only embeds well-formed Spotify playlist IDs',()=>{
  assert.equal(embedURL(undefined),null);
 });
 
-test('every public page with the footer loads the player script',async()=>{
- for(const page of ['out/index.html','out/blog/index.html']){
+test('every public page with the footer loads the site bundle that runs the player',async()=>{
+ for(const page of ['out/index.html','out/blog/index.html','out/projects/index.html']){
   const html=await readFile(new URL('../'+page,import.meta.url),'utf8');
-  assert.match(html,/<script type="module" src="\/playlist\.js\?v=[0-9a-f]{10}"><\/script>/,page);
+  assert.match(html,/<script type="module" src="\/site\.js\?v=[0-9a-f]{10}"><\/script>/,page);
  }
- await readFile(new URL('../out/playlist.js',import.meta.url));
+ const bundle=await readFile(new URL('../out/site.js',import.meta.url),'utf8');
+ assert.ok(bundle.includes('open.spotify.com/embed/playlist'));
 });

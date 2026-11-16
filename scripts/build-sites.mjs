@@ -1,11 +1,12 @@
 import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,cp,rm} from 'node:fs/promises';
 import {build} from 'esbuild';
-import {renderFooter} from '../components/footer.mjs';
 import {renderPostPage} from '../components/post-page.mjs';
 import {renderArticleCard,renderSiteCardJpeg} from '../components/og-image.mjs';
+import {renderBlogShell} from '../components/layout.mjs';
+import {buildPages} from '../components/site.mjs';
 import {renderRobots,renderSitemap,renderFeed} from '../components/crawl-files.mjs';
-import {dateLabel} from '../dist/blog/listing.js';
+import {dateLabel,indexMarkup} from '../dist/blog/listing.js';
 import {fileURLToPath} from 'node:url';
 import {esbuildDefines, firebaseConfig, loadEnv, requireEnv} from '../lib/env.mjs';
 loadEnv();
@@ -17,13 +18,12 @@ await rm(out,{recursive:true,force:true});
 await mkdir(new URL('blog/',out),{recursive:true});
 await cp(new URL('assets/',source),new URL('assets/',out),{recursive:true});
 await cp(new URL('styles.css',source),new URL('styles.css',out));
-await cp(new URL('nav.js',source),new URL('nav.js',out));
-await cp(new URL('now-playing.js',source),new URL('now-playing.js',out));
-await cp(new URL('playlist.js',source),new URL('playlist.js',out));
+await cp(new URL('theme-init.js',source),new URL('theme-init.js',out));
 await cp(new URL('blog/blog.css',source),new URL('blog/blog.css',out));
+await build({entryPoints:[fileURLToPath(new URL('../src/client/main.js',source))],outfile:fileURLToPath(new URL('site.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,logLevel:'warning'});
 await build({entryPoints:[fileURLToPath(new URL('blog/app.js',source))],outfile:fileURLToPath(new URL('blog/cloud-app.js',out)),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,define:esbuildDefines()});
 // nginx serves CSS and JS as immutable for a year, so every page links them by a hash of their contents.
-const ASSETS=['styles.css','blog/blog.css','blog/cloud-app.js','nav.js','now-playing.js','playlist.js'];
+const ASSETS=['styles.css','blog/blog.css','blog/cloud-app.js','theme-init.js','site.js'];
 const versions=new Map();
 for(const asset of ASSETS)versions.set(asset,createHash('sha256').update(await readFile(new URL(asset,out))).digest('hex').slice(0,10));
 function stamp(html){
@@ -31,18 +31,29 @@ function stamp(html){
  for(const [asset,version] of versions)stamped=stamped.replace(new RegExp(`(src|href)="/?${asset.replace(/\./g,'\\.')}(\\?v=[^"]*)?"`,'g'),`$1="/${asset}?v=${version}"`);
  return stamped;
 }
-await writeFile(new URL('index.html',out),stamp(await readFile(new URL('index.html',source),'utf8')));
 // Published journal posts snapshotted by scripts/fetch-posts.mjs; absent in local and pull-request builds.
 let journal=[];
 try{journal=JSON.parse(await readFile(new URL('blog/journal-posts.json',source),'utf8'));}catch(error){if(error.code!=='ENOENT')throw error;}
 if(!Array.isArray(journal))throw Error('journal-posts.json must be an array');
+const medium=JSON.parse(await readFile(new URL('blog/medium-posts.json',source),'utf8'));
+const {content,menus,pages}=await buildPages({posts:[...journal,...medium],prerendered:new Set(journal.map(p=>p.slug))});
+await mkdir(new URL('assets/og/',out),{recursive:true});
+for(const page of pages){
+ const target=new URL(page.file,out);
+ await mkdir(new URL('./',target),{recursive:true});
+ await writeFile(target,stamp(page.html));
+ if(page.card)await writeFile(new URL('assets/og/'+page.card.name+'.jpg',out),await renderArticleCard({title:page.card.title,label:page.card.eyebrow}));
+}
 // Shared renderer runs locally against files and in production against Firebase.
 const cloudPage=html=>stamp(html.replace('<body>',`<body data-cms="firebase" data-pages="${journal.map(p=>p.slug).join(' ')}">`).replace('src="/blog/app.js"','src="/blog/cloud-app.js"'));
-const blog=cloudPage(await readFile(new URL('blog/index.html',source),'utf8'));
+// Prerender the same list the client renders, so swapping in live posts does not repaint the largest element.
+const blogSource=await readFile(new URL('blog/index.html',source),'utf8');
+const blogMain=/(<main id="app"[^>]*>)[\s\S]*?(<\/main>)/;
+if(!blogMain.test(blogSource))throw Error('dist/blog/index.html has no <main id="app">');
+const blog=cloudPage(blogSource.replace(blogMain,(_,open,close)=>open+indexMarkup([...journal,...medium])+close));
 await writeFile(new URL('blog/index.html',out),blog);
-const template=await readFile(new URL('templates/blog.html',root),'utf8');
-await mkdir(new URL('assets/og/',out),{recursive:true});
-await writeFile(new URL('assets/andile-opengraph.jpg',out),await renderSiteCardJpeg());
+const template=renderBlogShell(await readFile(new URL('templates/blog.html',root),'utf8'),menus);
+await writeFile(new URL('assets/andile-opengraph.jpg',out),await renderSiteCardJpeg({positioning:content.site.positioning}));
 for(const post of journal){
  if(post.slug==='admin')throw Error('The slug "admin" is reserved for /blog/admin');
  await mkdir(new URL('blog/'+post.slug+'/',out),{recursive:true});
@@ -50,15 +61,13 @@ for(const post of journal){
  await writeFile(new URL('assets/og/'+post.slug+'.jpg',out),await renderArticleCard({title:post.title,label:'Writing · '+dateLabel(post.date)}));
 }
 await cp(new URL('blog/medium-posts.json',source),new URL('blog/medium-posts.json',out));
-const medium=JSON.parse(await readFile(new URL('blog/medium-posts.json',source),'utf8'));
 await writeFile(new URL('robots.txt',out),renderRobots(origin));
-await writeFile(new URL('sitemap.xml',out),renderSitemap(origin,journal));
+await writeFile(new URL('sitemap.xml',out),renderSitemap(origin,journal,pages.filter(p=>p.file!=='404.html').map(p=>p.path)));
 await writeFile(new URL('blog/feed.xml',out),renderFeed(origin,journal,medium));
 // Published so the scheduled workflow can tell whether the live site is behind Firestore.
 await writeFile(new URL('blog/journal-posts.json',out),JSON.stringify(journal,null,1)+'\n');
 for(const route of ['admin','admin/posts','blog/admin']){
  await mkdir(new URL(route+'/',out),{recursive:true});
- await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(/<main id="app">[\s\S]*?<\/main>/,'<main id="app"><section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section></main>'));
+ await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(blogMain,(_,open,close)=>open+'<section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section>'+close));
 }
-await writeFile(new URL('404.html',out),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#fcfefc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0d120e" media="(prefers-color-scheme: dark)"><title>Page not found · Andile Jaden Mbele</title><link rel="stylesheet" href="/styles.css?v=${versions.get('styles.css')}"><main class="page intro"><h1>Page not found.</h1><p class="about">Try the <a href="/">homepage</a> or <a href="/blog/">writing archive</a>.</p></main><div class="page">${renderFooter()}</div></html>`);
-console.log(`Exported public portfolio, blog, and ${journal.length} journal post pages to `+fileURLToPath(out));
+console.log(`Exported ${pages.length} pages, the blog, and ${journal.length} journal post pages to `+fileURLToPath(out));

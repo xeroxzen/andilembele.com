@@ -13,3 +13,4 @@ data/
 .firebase/
 dist/blog/journal-posts.json
 out/
+dist/site.js

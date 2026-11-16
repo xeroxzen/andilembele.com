@@ -11,7 +11,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
 test('Markdown escapes HTML, blocks active URLs and renders authoring extensions',()=>{const output=markdown('<script>alert(1)</script>\n\n[x](javascript:alert)\n\n:::stat\nlabel: Scale\nvalue: 40\nnote: Context\n:::');assert.ok(!output.includes('<script>'));assert.ok(!output.includes('href="javascript:'));assert.ok(output.includes('blog-stat'));assert.ok(output.includes('<strong>40</strong>'));assert.ok(markdown('```\n<b>raw</b>\n```').includes('&lt;b&gt;'));});
 test('Markdown renders tables, highlighted code, multi-line quotes and nested lists',()=>{
  const table=markdown('| Case | Result |\n| --- | :---: |\n| `a\\|b` | **kept** |');
- assert.ok(table.includes('<table><thead><tr><th>Case</th><th style="text-align:center">Result</th></tr></thead>'));
+ assert.ok(table.includes('<table><thead><tr><th>Case</th><th class="align-center">Result</th></tr></thead>'));
  assert.ok(table.includes('<td><code>a|b</code></td>'));
  const code=markdown('```rust\nlet s = "<b>"; // note\n```');
  assert.ok(code.startsWith('<pre data-lang="rust"><code class="language-rust"><span class="tok-keyword">let</span>'));
