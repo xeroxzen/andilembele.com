@@ -38,6 +38,13 @@ test('only both verified Google administrators can manage posts; public sees pub
   await assert.rejects(restorePosts(owner,[{...post,slug:'new-post'},post]));
   assert.equal((await getDoc(doc(owner,'posts/new-post'))).exists(),false);
   await deleteDoc(doc(owner,'posts/test'));
+  const scheduled={...post,status:'scheduled',publishAt:'2026-12-01T06:00:00.000Z'};
+  await assertSucceeds(setDoc(doc(owner,'posts/test'),scheduled));
+  await assertFails(getDoc(doc(anonymous,'posts/test')));
+  await assertFails(setDoc(doc(owner,'posts/test'),{...post,status:'scheduled'}));
+  await assertFails(setDoc(doc(owner,'posts/test'),{...scheduled,publishAt:'tomorrow'}));
+  await assertFails(setDoc(doc(owner,'posts/test'),{...scheduled,status:'published'}));
+  await deleteDoc(doc(owner,'posts/test'));
   await assertFails(setDoc(doc(owner,'settings/admins'),{emails:['visitor@example.com']}));
  }finally{await env.cleanup();}
 });

@@ -13,7 +13,7 @@ service cloud.firestore {
   }
   function valid(p, slug) {
    return p.keys().hasAll(['title','slug','excerpt','content','date','coverImage','tags','status'])
-    && p.keys().hasOnly(['title','slug','excerpt','content','date','coverImage','tags','status'])
+    && p.keys().hasOnly(['title','slug','excerpt','content','date','coverImage','tags','status','publishAt'])
     && p.slug == slug && p.slug is string && p.slug.size() <= 100 && p.slug.matches('[a-z0-9]+(-[a-z0-9]+)*')
     && p.title is string && p.title.size() > 0 && p.title.size() <= 200
     && p.content is string && p.content.size() > 0 && p.content.size() <= 200000
@@ -21,7 +21,10 @@ service cloud.firestore {
     && p.date is string && p.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
     && p.coverImage == '' && p.tags is list && p.tags.size() <= 10
     && ${Array.from({length:10},(_,i)=>`(p.tags.size() <= ${i} || (p.tags[${i}] is string && p.tags[${i}].size() <= 40))`).join('\n    && ')}
-    && p.status in ['draft','published'];
+    && p.status in ['draft','published','scheduled']
+    && ((p.status == 'scheduled' && 'publishAt' in p && p.publishAt is string
+      && p.publishAt.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z'))
+     || (p.status != 'scheduled' && !('publishAt' in p)));
   }
   match /posts/{slug} {
    allow read: if admin() || resource.data.status == 'published';

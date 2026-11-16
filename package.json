@@ -10,6 +10,7 @@
     "build": "node scripts/build-blog.mjs",
     "build:sites": "npm run build && node scripts/build-sites.mjs",
     "fetch:posts": "node scripts/fetch-posts.mjs",
+    "publish:scheduled": "node scripts/publish-scheduled.mjs",
     "prestart": "npm run build",
     "predev": "npm run build",
     "pretest": "npm run build:sites",
