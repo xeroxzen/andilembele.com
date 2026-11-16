@@ -6,7 +6,7 @@
   "highlight": [
     "secure"
   ],
-  "summary": "Software engineer working in Go, Python, TypeScript and Rust across security, data, infrastructure and AI. CEO of Vectra Dynamics and CTO of Optimeer Labs.",
+  "summary": "Software engineer working in Go, Python, TypeScript and Rust across security, data, infrastructure and AI. Founding Engineer at TraceGraph.",
   "about": [
     "I turn recurring engineering work into platforms: the systems, automation, and observability that help teams ship faster without trading away reliability.",
     "Most of how I build comes from a short shelf of books, a longer stack of papers, and systems that broke in production. Right now that means distributed systems and evals for AI agents.",
@@ -43,7 +43,7 @@
     {
       "title": "Founding or early engineer",
       "focus": "Security, data, or AI teams going from zero to one.",
-      "evidence": "Founding Engineer at TraceGraph, CEO of Vectra Dynamics, and CTO of Optimeer Labs."
+      "evidence": "Founding Engineer at TraceGraph and at Vectra Dynamics, and Lead Engineer at Optimeer Labs."
     }
   ],
   "resumePdf": "/assets/Andile_Mbele.pdf",
