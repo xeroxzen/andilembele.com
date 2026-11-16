@@ -6,7 +6,8 @@ import { art } from './illustrations.mjs';
 // except where a parameter is documented as HTML.
 
 const MAX_ITEMS = 200;
-const STATUS_TONES = { Active: 'green', Live: 'blue', Shipped: 'purple', Archived: 'gray' };
+// Status is the one property with colour: green for live, amber for work in progress, neutral otherwise.
+const STATUS_TONES = { Active: 'warning', Live: 'success', Shipped: 'gray', Archived: 'gray' };
 const DOMAIN_TONES = {
   AI: 'purple', Data: 'blue', Security: 'red', Infrastructure: 'gray', Fintech: 'green', PropTech: 'yellow', Health: 'pink', Operations: 'brown', Hardware: 'orange',
   Work: 'blue', Venture: 'purple', Community: 'green',

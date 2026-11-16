@@ -40,6 +40,7 @@ export async function buildPages({ posts, prerendered }) {
     path: page.path,
     file: outputFile(page.path),
     card: page.card ? { ...page.card, name: cardName(page.path) } : null,
+    noindex: Boolean(page.noindex),
     html: renderPage({ ...page, page: previewPage(page), menus }),
   }));
   const files = new Set(pages.map((page) => page.file));

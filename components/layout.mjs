@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { PALETTE } from '../lib/palette.mjs';
 import { escapeHTML as e } from '../dist/blog/markdown.js';
 import { renderFooter, socialLinks } from './footer.mjs';
 import { renderSocialMeta } from './social-meta.mjs';
@@ -18,7 +19,10 @@ const SLASH = [
   { command: '/resume', href: '/resume/', label: 'Read the résumé' },
   { command: '/contact', href: '/contact/', label: 'Get in touch' },
 ];
-export const THEME_COLORS = { light: '#fbfbfa', dark: '#191919' };
+export const THEME_COLORS = { light: PALETTE.light.bg, dark: PALETTE.dark.bg };
+
+// The moon shows in light mode and the sun in dark; CSS picks one, and /site.js keeps aria-pressed current.
+const THEME_TOGGLE = '<button class="theme-toggle js-only" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark theme"><svg class="theme-icon theme-icon-moon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><path d="M16 12.5A6.5 6.5 0 0 1 7.5 4a6.5 6.5 0 1 0 8.5 8.5Z"/></svg><svg class="theme-icon theme-icon-sun" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4"/></svg></button>';
 
 /**
  * The <head> contents shared by every page. Scripts and stylesheets are versioned by build-sites.
@@ -34,7 +38,7 @@ export function renderHead({ title, description }) {
 export function renderHeader(current, mainId = 'main') {
   assert.ok(current === '' || NAV.some((item) => item.href === current), 'renderHeader: unknown current page ' + current);
   const links = NAV.map((item) => `<a href="${item.href}"${item.href === current ? ' aria-current="page"' : ''}>${item.label}</a>`).join('');
-  return `<a class="skip" href="#${mainId}">Skip to content</a><header class="site-header"><div class="site-header-inner"><a class="wordmark" href="/"><span class="wordmark-mark" aria-hidden="true">A</span><span>Andile Jaden Mbele</span></a><nav class="site-nav" aria-label="Main">${links}</nav><button class="palette-trigger js-only" type="button" data-palette-open aria-keyshortcuts="Meta+K Control+K"><span class="palette-trigger-label">Search<span class="visually-hidden"> pages and actions</span></span><kbd data-mod-key aria-hidden="true">⌘</kbd><kbd aria-hidden="true">K</kbd></button></div></header>`;
+  return `<a class="skip" href="#${mainId}">Skip to content</a><header class="site-header"><div class="site-header-inner"><a class="wordmark" href="/"><span class="wordmark-mark" aria-hidden="true">A</span><span>Andile Jaden Mbele</span></a><nav class="site-nav" aria-label="Main">${links}</nav><button class="palette-trigger js-only" type="button" data-palette-open aria-keyshortcuts="Meta+K Control+K"><span class="palette-trigger-label">Search<span class="visually-hidden"> pages and actions</span></span><kbd data-mod-key aria-hidden="true">⌘</kbd><kbd aria-hidden="true">K</kbd></button>${THEME_TOGGLE}</div></header>`;
 }
 
 function option(id, { label, hint = '', keywords = '', action, value }) {

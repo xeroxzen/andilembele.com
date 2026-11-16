@@ -3,13 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { Resvg } from '@resvg/resvg-js';
 import jpeg from 'jpeg-js';
+import { PALETTE } from '../lib/palette.mjs';
 
-// Share cards in the site's style: warm paper, near-black type, one green accent, and a block handle.
+// Share cards in the site's palette: sand background, charcoal type, one blue mark, and a block handle.
 const FONTS = ['Medium', 'SemiBold', 'Bold'].map((weight) => fileURLToPath(new URL(`../scripts/fonts/Inter-${weight}.ttf`, import.meta.url)));
 const PORTRAIT = new URL('../dist/assets/andile-mbele.jpg', import.meta.url);
 export const ARTICLE_IMAGE = { width: 1200, height: 631 };
 const { width: W, height: H } = ARTICLE_IMAGE;
-const PAPER = '#fbfbfa', INK = '#191919', MUTED = '#6b6b68', LINE = '#e9e9e7', ACCENT = '#007a14';
+const { bg: PAPER, text: INK, 'text-muted': MUTED, border: LINE, 'surface-strong': HANDLE, accent: ACCENT } = PALETTE.light;
 const LEFT = 88, TEXT_WIDTH = 940, BOLD_CHAR_EM = 0.56, MAX_LINES = 4, TITLE_HEIGHT = 330;
 const SIZES = [96, 80, 68, 58];
 // Link previewers such as WhatsApp drop images much over 300 KB.
@@ -52,7 +53,7 @@ export function fitTitle(title) {
 // Six dots, like the drag handle on the site's blocks.
 function handle(x, y) {
   let dots = '';
-  for (let row = 0; row < 3; row += 1) for (let col = 0; col < 2; col += 1) dots += `<circle cx="${x + col * 12}" cy="${y + row * 12}" r="3.2" fill="${LINE}"/>`;
+  for (let row = 0; row < 3; row += 1) for (let col = 0; col < 2; col += 1) dots += `<circle cx="${x + col * 12}" cy="${y + row * 12}" r="3.2" fill="${HANDLE}"/>`;
   return dots;
 }
 
@@ -90,4 +91,12 @@ export async function renderSiteCardJpeg({ positioning }) {
   const tspans = lines.map((line, i) => `<tspan x="${LEFT}" y="${250 + i * 66}">${escapeXML(line)}</tspan>`).join('');
   const photo = `<defs><clipPath id="p"><circle cx="1010" cy="200" r="86"/></clipPath></defs><image xlink:href="${portrait}" x="924" y="114" width="172" height="172" preserveAspectRatio="xMidYMid slice" clip-path="url(#p)"/><circle cx="1010" cy="200" r="86" fill="none" stroke="${LINE}" stroke-width="2"/>`;
   return toJpeg(frame(`${photo}<text font-family="Inter" font-weight="700" font-size="58" letter-spacing="-1.8" fill="${INK}">${tspans}</text>`));
+}
+
+/**
+ * The favicon: a sand tile, a charcoal "a", and a blue full stop.
+ */
+export function renderFavicon() {
+  const { bg, text, accent, border } = PALETTE.light;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="1" y="1" width="62" height="62" rx="14" fill="${bg}" stroke="${border}" stroke-width="2"/><text x="11" y="45" font-family="Inter,Arial,Helvetica,sans-serif" font-size="40" font-weight="700" fill="${text}">a</text><circle cx="46" cy="41" r="5" fill="${accent}"/></svg>\n`;
 }

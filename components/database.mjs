@@ -59,7 +59,7 @@ function calendarGrid(month, items, today) {
   for (let i = 0; i < offset; i += 1) cells.push('<span></span>');
   for (let day = 1; day <= days; day += 1) {
     const date = `${month}-${String(day).padStart(2, '0')}`;
-    const marks = items.filter((item) => item.date === date).map((item) => `<i class="calendar-mark cover-${e(item.cover)}" data-mark data-tags="${e(item.tags.map(tagSlug).join(' '))}"></i>`).join('');
+    const marks = items.filter((item) => item.date === date).map((item) => `<i class="calendar-mark mark-${e(item.mark ?? 'solid')}" data-mark data-tags="${e(item.tags.map(tagSlug).join(' '))}"></i>`).join('');
     cells.push(`<span class="calendar-day${date === today ? ' is-today' : ''}${marks ? ' has-marks' : ''}">${day}${marks ? `<span class="calendar-marks">${marks}</span>` : ''}</span>`);
   }
   return `<div class="calendar-grid" aria-hidden="true">${cells.join('')}</div>`;
@@ -97,7 +97,8 @@ function toolbar(config, filters, count) {
 /**
  * Render a database. Items: { title, href?, icon?, cover, summary, tags, group?, cells: {key: html}, props: html }.
  * Config: { id, label, titleLabel, columns: [{key,label}], views, defaultView, groups?, emptyGroup?, filters?, filterLabel?, noun: [one, many] }.
- * A calendar view also needs items[].date (YYYY-MM-DD or YYYY-MM), config.months (YYYY-MM, newest first) and config.today.
+ * A calendar view also needs items[].date (YYYY-MM-DD or YYYY-MM), config.months (YYYY-MM, newest first) and config.today;
+ * items[].mark ('solid' or 'ring') sets how the day is marked.
  * `stateKey` prefixes the URL parameters, so two databases on one page keep separate state.
  */
 export function databaseView(config, items) {

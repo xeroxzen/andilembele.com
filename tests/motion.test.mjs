@@ -11,7 +11,7 @@ test('all animation sits behind prefers-reduced-motion: no-preference',async()=>
  assert.ok(start>0,'motion block is missing');
  const outside=styles.slice(0,start).replace(/@media\(prefers-reduced-motion:no-preference\)\{[\s\S]*?\n\}/g,'');
  assert.equal(/animation:[a-z]/.test(outside),false,'an animation runs outside the reduced-motion guard');
- for(const name of ['word-rise','ink-draw','mark-sweep','pulse','menu-in','bob'])assert.match(styles,new RegExp('@keyframes '+name+'\\{'));
+ for(const name of ['word-rise','ink-draw','pulse','menu-in','bob'])assert.match(styles,new RegExp('@keyframes '+name+'\\{'));
 });
 
 test('the hero draws its line art, moves data packets, and reads its headline once',async()=>{
@@ -19,7 +19,7 @@ test('the hero draws its line art, moves data packets, and reads its headline on
  assert.match(home,/<svg class="art art-hero"[^>]*aria-hidden="true"/);
  assert.equal((home.match(/<animateMotion /g)||[]).length,3);
  assert.match(home,/<h1 class="display" id="hero-title" aria-label="I build secure, data-heavy systems — from 40B-record pipelines to AI tooling\."><span aria-hidden="true">/);
- assert.match(home,/<span class="word-mark">secure,<\/span>/);
+ assert.match(home,/<em class="headline-em">secure,<\/em>/);
  assert.match(home,/<dd data-count-to="40" data-suffix="B\+">40B\+<\/dd>/);
 });
 

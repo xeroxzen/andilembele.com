@@ -36,7 +36,7 @@ test('a calendar view places each item in its month and marks dated items on the
  assert.match(html,/<section class="calendar-month is-current" aria-labelledby="log-2026-11"><h3 class="calendar-title" id="log-2026-11">November <span>2026<\/span>/);
  // November 2026 starts on a Sunday: six blank cells after the weekday row in a Monday-first grid.
  assert.match(html,/<span class="calendar-weekday">S<\/span>(<span><\/span>){6}<span class="calendar-day">1<\/span>/);
- assert.match(html,/<span class="calendar-day has-marks">15<span class="calendar-marks"><i class="calendar-mark cover-gray" data-mark data-tags="rust"><\/i>/);
+ assert.match(html,/<span class="calendar-day has-marks">15<span class="calendar-marks"><i class="calendar-mark mark-solid" data-mark data-tags="rust"><\/i>/);
  assert.match(html,/<span class="calendar-day is-today">16<\/span>/);
  assert.match(html,/<span class="calendar-undated">Month<\/span>/);
  assert.match(html,/aria-labelledby="log-2026-09">[\s\S]*?<ol class="calendar-items"><\/ol><p class="calendar-none">/);

@@ -5,6 +5,7 @@ import {renderSocialMeta} from '../components/social-meta.mjs';
 import {renderFooter} from '../components/footer.mjs';
 import {renderBlogShell} from '../components/layout.mjs';
 import {buildPages} from '../components/site.mjs';
+import {renderFavicon} from '../components/og-image.mjs';
 import {indexMarkup,markupHash} from '../dist/blog/listing.js';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
@@ -19,6 +20,7 @@ for(const page of pages){
 }
 const shell=renderBlogShell(await read('templates/blog.html'),menus).replace('{{footer}}',()=>renderFooter()).replace('{{socialMeta}}',()=>renderSocialMeta({blog:true})).replace('{{content}}',()=>indexMarkup(posts)).replace('<main id="app"',`<main id="app" data-rendered="${markupHash(indexMarkup(posts))}"`);
 await writeFile(new URL('dist/blog/index.html',root),shell);
+await writeFile(new URL('dist/assets/favicon.svg',root),renderFavicon());
 // One bundle for every page's interactive parts: menus, theme, database views, reveal, and the widgets.
 await build({entryPoints:[fileURLToPath(new URL('src/client/main.js',root))],outfile:fileURLToPath(new URL('dist/site.js',root)),bundle:true,format:'esm',platform:'browser',target:'es2022',logLevel:'warning'});
 // A self-contained public preview for static servers; never includes private posts or CMS access.

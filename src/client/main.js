@@ -1,6 +1,6 @@
 // Entry point for /site.js on every public page.
 import { createMenu, shortcutFor } from './menu.js';
-import { applyTheme, currentTheme, toggledTheme } from './theme.js';
+import { applyTheme, currentTheme, effectiveTheme, toggledTheme } from './theme.js';
 import { initDatabase } from './database.js';
 import { initReveal } from './reveal.js';
 import { initMotion } from './motion.js';
@@ -11,6 +11,11 @@ import './playlist.js';
 const isMac = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform ?? navigator.platform ?? '');
 const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+function syncThemeToggles() {
+  const dark = effectiveTheme(currentTheme(), prefersDark()) === 'dark';
+  for (const button of document.querySelectorAll('[data-theme-toggle]')) button.setAttribute('aria-pressed', String(dark));
+}
+
 function runAction(action, value) {
   if (action === 'go') {
     if (/^https:/.test(value) || value.endsWith('.pdf')) window.open(value, '_blank', 'noopener');
@@ -20,6 +25,7 @@ function runAction(action, value) {
   } else if (action === 'theme') {
     const next = value === 'system' ? null : toggledTheme(currentTheme(), prefersDark());
     applyTheme(next);
+    syncThemeToggles();
     toast(next ? `${next[0].toUpperCase()}${next.slice(1)} theme on.` : 'Following the system theme.');
   } else {
     throw new Error('Unknown menu action ' + action);
@@ -43,6 +49,9 @@ function initMenus() {
 }
 
 initMenus();
+for (const button of document.querySelectorAll('[data-theme-toggle]')) button.addEventListener('click', () => runAction('theme', 'toggle'));
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeToggles);
+syncThemeToggles();
 for (const root of document.querySelectorAll('[data-database]')) initDatabase(root);
 initActions(document);
 initReveal(document);

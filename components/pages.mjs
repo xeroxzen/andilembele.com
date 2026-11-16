@@ -5,6 +5,7 @@ import { STATUSES, DOMAINS } from '../lib/content.mjs';
 import { block, sectionHeading, callout, divider, pill, statusPill, domainPill, tagPills, toneOf, pageIcon, illustration, pageHeader, listView, gallery } from './blocks.mjs';
 import { databaseView } from './database.mjs';
 import { socialLinks } from './footer.mjs';
+import { designPage } from './design.mjs';
 
 // One function per page. Each returns { path, title, description, current, main, card } and never touches the file system.
 
@@ -67,10 +68,10 @@ function shippedThisYear(shipped, today) {
 function shippingLog({ shipped }, { posts, prerendered, today }) {
   const months = logMonths(today, shipped.map((s) => s.date));
   const inWindow = (date) => months.includes(date.slice(0, 7));
-  const work = shipped.filter((s) => inWindow(s.date)).map((s) => ({ title: s.title, href: s.href, date: s.date, cover: 'green', summary: s.summary, tags: ['Software', s.kind, s.domain], props: pill(s.kind, toneOf(s.kind)) + domainPill(s.domain), cells: { date: e(s.date.length === 10 ? dateLabel(s.date) : monthLabel(s.date)), kind: pill(s.kind, toneOf(s.kind)), domain: domainPill(s.domain), summary: `<span class="cell-wrap">${e(s.summary)}</span>` } }));
+  const work = shipped.filter((s) => inWindow(s.date)).map((s) => ({ title: s.title, href: s.href, date: s.date, cover: 'green', mark: 'solid', summary: s.summary, tags: ['Software', s.kind, s.domain], props: pill(s.kind, toneOf(s.kind)) + domainPill(s.domain), cells: { date: e(s.date.length === 10 ? dateLabel(s.date) : monthLabel(s.date)), kind: pill(s.kind, toneOf(s.kind)), domain: domainPill(s.domain), summary: `<span class="cell-wrap">${e(s.summary)}</span>` } }));
   const writing = posts.filter((post) => inWindow(post.date)).map((post) => {
     const source = post.source === 'Medium' ? 'Medium' : 'Journal';
-    return { title: post.title, href: postHref(post, prerendered), date: post.date, cover: 'pink', summary: post.excerpt || `On ${source}.`, tags: ['Writing'], props: pill('Writing', toneOf('Writing')) + pill(source), cells: { date: e(dateLabel(post.date)), kind: pill('Writing', toneOf('Writing')), domain: pill(source), summary: `<span class="cell-wrap">${e(post.excerpt || '')}</span>` } };
+    return { title: post.title, href: postHref(post, prerendered), date: post.date, cover: 'pink', mark: 'ring', summary: post.excerpt || `On ${source}.`, tags: ['Writing'], props: pill('Writing', toneOf('Writing')) + pill(source), cells: { date: e(dateLabel(post.date)), kind: pill('Writing', toneOf('Writing')), domain: pill(source), summary: `<span class="cell-wrap">${e(post.excerpt || '')}</span>` } };
   });
   const items = [...work, ...writing].sort((a, b) => b.date.localeCompare(a.date));
   const domains = DOMAINS.filter((d) => work.some((item) => item.tags.includes(d)));
@@ -80,7 +81,7 @@ function shippingLog({ shipped }, { posts, prerendered, today }) {
     views: ['calendar', 'table'], defaultView: 'calendar', months, today,
     filters: ['Software', 'Writing', ...domains], filterLabel: 'Filter the shipping log',
   };
-  const lead = `<p class="section-lead">${shippedThisYear(shipped, today)} projects and releases in ${today.slice(0, 4)}, plus the writing in between. Green marks software, pink marks writing.</p>`;
+  const lead = `<p class="section-lead">${shippedThisYear(shipped, today)} projects and releases in ${today.slice(0, 4)}, plus the writing in between. Filled dots are software, rings are writing.</p>`;
   return block(sectionHeading('Shipping log', { id: 'shipped' }) + lead, { className: 'section', reveal: false }) + databaseView(config, items);
 }
 
@@ -89,10 +90,11 @@ function projectCard(p) {
 }
 
 function hero(site) {
+  // At most one word in a headline is set in the serif italic.
   const marked = new Set(site.highlight.map((w) => w.toLowerCase()));
   const words = site.positioning.split(' ').map((word, i) => {
     const mark = marked.has(word.toLowerCase().replace(/[^\p{L}\p{N}-]/gu, ''));
-    return `<span class="word w${Math.min(i + 1, 16)}">${mark ? `<span class="word-mark">${e(word)}</span>` : e(word)}</span>`;
+    return `<span class="word w${Math.min(i + 1, 16)}">${mark ? `<em class="headline-em">${e(word)}</em>` : e(word)}</span>`;
   }).join(' ');
   const person = `<div class="hero-person">${portrait(56)}<div><p class="hero-name">${e(site.name)}</p><a class="status" href="#open-to"><span class="status-dot" aria-hidden="true"></span>${e(site.status)}</a></div></div>`;
   const title = `<h1 class="display" id="hero-title" aria-label="${e(site.positioning)}"><span aria-hidden="true">${words}</span></h1>`;
@@ -257,6 +259,7 @@ export function allPages(content, { posts, prerendered, today = new Date().toISO
     aboutPage(content),
     resumePage(content),
     contactPage(content),
+    designPage(),
   ];
 }
 

@@ -64,7 +64,7 @@ for(const post of journal){
 }
 await cp(new URL('blog/medium-posts.json',source),new URL('blog/medium-posts.json',out));
 await writeFile(new URL('robots.txt',out),renderRobots(origin));
-await writeFile(new URL('sitemap.xml',out),renderSitemap(origin,journal,pages.filter(p=>p.file!=='404.html').map(p=>p.path)));
+await writeFile(new URL('sitemap.xml',out),renderSitemap(origin,journal,pages.filter(p=>!p.noindex).map(p=>p.path)));
 await writeFile(new URL('blog/feed.xml',out),renderFeed(origin,journal,medium));
 // Published so the scheduled workflow can tell whether the live site is behind Firestore.
 await writeFile(new URL('blog/journal-posts.json',out),JSON.stringify(journal,null,1)+'\n');
