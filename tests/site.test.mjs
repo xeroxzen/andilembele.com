@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,access,readdir} from 'node:fs/promises';
 import {cardName,outputFile} from '../components/site.mjs';
+import {indexMarkup,markupHash,postLink} from '../dist/blog/listing.js';
 
 const out=new URL('../out/',import.meta.url);
 const read=path=>readFile(new URL(path,out),'utf8');
@@ -71,6 +72,25 @@ test('the blog index is prerendered and admin routes show the workspace placehol
  for(const route of ['admin','admin/posts','blog/admin']){
   const html=await read(route+'/index.html');
   assert.match(html,/<meta name="robots" content="noindex,nofollow">/,route);
+  assert.doesNotMatch(html,/data-rendered/,route);
   assert.match(html,/<main id="app"[^>]*><section class="blog-head"><h1>Admin\.<\/h1><p>Loading workspace…<\/p><\/section><\/main>/,route);
  }
+});
+
+test('the blog index carries the hash of the list the client would render, so it skips an identical redraw',async()=>{
+ const blog=await read('blog/index.html');
+ const medium=JSON.parse(await read('blog/medium-posts.json'));
+ const stamp=blog.match(/<main id="app" data-rendered="([0-9a-f]{8})"/)[1];
+ // Local builds have no journal snapshot, so the prerendered list is the Medium posts alone.
+ assert.equal(stamp,markupHash(indexMarkup(medium)));
+ assert.equal(markupHash(indexMarkup([...medium].reverse())),stamp,'order of the fetched posts does not matter');
+ assert.notEqual(markupHash(indexMarkup(medium.slice(1))),stamp);
+ assert.equal(markupHash(''),'811c9dc5');
+});
+
+test('journal posts link to their prerendered page when the build passes its slugs',()=>{
+ const post={slug:'rumi',source:'Journal',title:'Rumi',date:'2026-11-09',tags:[],excerpt:'x'};
+ assert.equal(postLink(post,['rumi']),'/blog/rumi/');
+ assert.equal(postLink(post,[]),'/blog/?post=rumi');
+ assert.match(indexMarkup([post],['rumi']),/<a href="\/blog\/rumi\/">Rumi/);
 });

@@ -6,7 +6,7 @@ import {renderArticleCard,renderSiteCardJpeg} from '../components/og-image.mjs';
 import {renderBlogShell} from '../components/layout.mjs';
 import {buildPages} from '../components/site.mjs';
 import {renderRobots,renderSitemap,renderFeed} from '../components/crawl-files.mjs';
-import {dateLabel,indexMarkup} from '../dist/blog/listing.js';
+import {dateLabel,indexMarkup,markupHash} from '../dist/blog/listing.js';
 import {fileURLToPath} from 'node:url';
 import {esbuildDefines, firebaseConfig, loadEnv, requireEnv} from '../lib/env.mjs';
 loadEnv();
@@ -50,7 +50,9 @@ const cloudPage=html=>stamp(html.replace('<body>',`<body data-cms="firebase" dat
 const blogSource=await readFile(new URL('blog/index.html',source),'utf8');
 const blogMain=/(<main id="app"[^>]*>)[\s\S]*?(<\/main>)/;
 if(!blogMain.test(blogSource))throw Error('dist/blog/index.html has no <main id="app">');
-const blog=cloudPage(blogSource.replace(blogMain,(_,open,close)=>open+indexMarkup([...journal,...medium])+close));
+const blogList=indexMarkup([...journal,...medium],journal.map(p=>p.slug));
+const stampAttr=/ data-rendered="[0-9a-f]*"/;
+const blog=cloudPage(blogSource.replace(blogMain,(_,open,close)=>open.replace(stampAttr,'').replace('<main id="app"',`<main id="app" data-rendered="${markupHash(blogList)}"`)+blogList+close));
 await writeFile(new URL('blog/index.html',out),blog);
 const template=renderBlogShell(await readFile(new URL('templates/blog.html',root),'utf8'),menus);
 await writeFile(new URL('assets/andile-opengraph.jpg',out),await renderSiteCardJpeg({positioning:content.site.positioning}));
@@ -68,6 +70,6 @@ await writeFile(new URL('blog/feed.xml',out),renderFeed(origin,journal,medium));
 await writeFile(new URL('blog/journal-posts.json',out),JSON.stringify(journal,null,1)+'\n');
 for(const route of ['admin','admin/posts','blog/admin']){
  await mkdir(new URL(route+'/',out),{recursive:true});
- await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(blogMain,(_,open,close)=>open+'<section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section>'+close));
+ await writeFile(new URL(route+'/index.html',out),blog.replace('<head>','<head><meta name="robots" content="noindex,nofollow">').replace(blogMain,(_,open,close)=>open.replace(stampAttr,'')+'<section class="blog-head"><h1>Admin.</h1><p>Loading workspace…</p></section>'+close));
 }
 console.log(`Exported ${pages.length} pages, the blog, and ${journal.length} journal post pages to `+fileURLToPath(out));

@@ -5,7 +5,7 @@ import {renderSocialMeta} from '../components/social-meta.mjs';
 import {renderFooter} from '../components/footer.mjs';
 import {renderBlogShell} from '../components/layout.mjs';
 import {buildPages} from '../components/site.mjs';
-import {indexMarkup} from '../dist/blog/listing.js';
+import {indexMarkup,markupHash} from '../dist/blog/listing.js';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const posts=JSON.parse(await read('dist/blog/medium-posts.json'));
@@ -17,7 +17,7 @@ for(const page of pages){
  await mkdir(new URL('./',target),{recursive:true});
  await writeFile(target,page.html);
 }
-const shell=renderBlogShell(await read('templates/blog.html'),menus).replace('{{footer}}',()=>renderFooter()).replace('{{socialMeta}}',()=>renderSocialMeta({blog:true})).replace('{{content}}',()=>indexMarkup(posts));
+const shell=renderBlogShell(await read('templates/blog.html'),menus).replace('{{footer}}',()=>renderFooter()).replace('{{socialMeta}}',()=>renderSocialMeta({blog:true})).replace('{{content}}',()=>indexMarkup(posts)).replace('<main id="app"',`<main id="app" data-rendered="${markupHash(indexMarkup(posts))}"`);
 await writeFile(new URL('dist/blog/index.html',root),shell);
 // One bundle for every page's interactive parts: menus, theme, database views, reveal, and the widgets.
 await build({entryPoints:[fileURLToPath(new URL('src/client/main.js',root))],outfile:fileURLToPath(new URL('dist/site.js',root)),bundle:true,format:'esm',platform:'browser',target:'es2022',logLevel:'warning'});

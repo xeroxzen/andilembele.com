@@ -1,5 +1,5 @@
 import {markdown,escapeHTML as e,blogSnippets,importMarkdown,localImagePaths,relinkImages} from './markdown.js';
-import {indexMarkup,visiblePosts,archive,dateLabel,subscribeMarkup} from './listing.js';
+import {indexMarkup,markupHash,visiblePosts,archive,dateLabel,subscribeMarkup} from './listing.js';
 import {toLocalInput,fromLocalInput,localDate} from './schedule.js';
 const app=document.querySelector('#app');
 const remote=document.body.dataset.cms==='firebase';
@@ -38,7 +38,10 @@ async function publicPage(){
   document.querySelector('#copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser.';}};
   document.querySelector('#related').innerHTML='<h2 class="small-heading">More writing</h2>'+archive(posts.filter(p=>p!==post).slice(0,2));return;
  }
- app.innerHTML=indexMarkup(posts);canonical('/blog/');
+ const markup=indexMarkup(posts);
+ // Replacing identical prerendered markup would repaint the largest element and delay LCP for nothing.
+ if(app.dataset.rendered!==markupHash(markup))app.innerHTML=markup;
+ canonical('/blog/');
  if(!preview&&results.some(r=>r.status==='rejected')){const notice=document.createElement('p');notice.className='notice';notice.textContent='Some articles could not be loaded. The available writing is shown below.';document.querySelector('#latest').before(notice);}
  const search=document.querySelector('#search'),topic=document.querySelector('#topic'),source=document.querySelector('#source'),more=document.querySelector('#more'),reset=document.querySelector('#reset-filters');
  const params=new URLSearchParams(location.search);search.value=params.get('q')||'';topic.value=params.get('topic')||'';source.value=params.get('source')||'';let limit=6;
