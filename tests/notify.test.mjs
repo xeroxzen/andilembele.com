@@ -23,7 +23,7 @@ test('email links to the post and leads with the excerpt',()=>{
 
 test('notify sends each new post once and refuses bulk changes',async()=>{
  const calls=[];
- const fetch=async(url,init)=>{calls.push(JSON.parse(init.body));assert.equal(url,'https://api.buttondown.com/v1/emails');assert.equal(init.headers.Authorization,'Token k');return json(201,{});};
+ const fetch=async(url,init)=>{calls.push(JSON.parse(init.body));assert.equal(url,'https://api.buttondown.com/v1/emails');assert.equal(init.headers.Authorization,'Token k');assert.equal(init.headers['X-Buttondown-Live-Dangerously'],'true');return json(201,{});};
  assert.deepEqual(await notify({previous:[post('a')],current:[post('a'),post('c')],origin,apiKey:'k',fetch}),['c']);
  assert.equal(calls[0].status,'about_to_send');assert.equal(calls[0].subject,'c');
  assert.deepEqual(await notify({previous:[post('a')],current:[post('a')],origin,apiKey:'k',fetch}),[]);
