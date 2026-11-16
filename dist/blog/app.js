@@ -1,5 +1,5 @@
 import {markdown,escapeHTML as e,blogSnippets,importMarkdown,localImagePaths,relinkImages} from './markdown.js';
-import {indexMarkup,visiblePosts,archive,dateLabel} from './listing.js';
+import {indexMarkup,visiblePosts,archive,dateLabel,subscribeMarkup} from './listing.js';
 import {toLocalInput,fromLocalInput,localDate} from './schedule.js';
 const app=document.querySelector('#app');
 const remote=document.body.dataset.cms==='firebase';
@@ -30,7 +30,7 @@ async function publicPage(){
   const prerendered=(document.body.dataset.pages||'').split(' ').includes(post.slug);
   if(location.pathname!==pretty&&prerendered)history.replaceState(null,'',pretty+location.hash);
   canonical(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
-  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div><nav id="related" aria-label="More writing"></nav></section>`;
+  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div>${subscribeMarkup()}<nav id="related" aria-label="More writing"></nav></section>`;
   document.querySelector('meta[name="description"]').content=post.excerpt;
   addCopyButtons(app);
   const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
