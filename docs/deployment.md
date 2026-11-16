@@ -135,6 +135,7 @@ The workflow expects these repository settings:
 | Variable | `DEPLOY_URL` | `https://andilembele.com` |
 | Secret | `DEPLOY_SSH_KEY` | Dedicated private key used only by GitHub Actions |
 | Secret | `DEPLOY_KNOWN_HOSTS` | Pinned SSH host-key entry for `139.84.233.151` |
+| Secret | `FIREBASE_SERVICE_ACCOUNT` | Key JSON for the post publisher service account (see Scheduled posts) |
 
 The Firebase build values and `CMS_ADMIN_EMAILS` are also stored as GitHub Actions secrets. Pull requests fall back to inert placeholders, so untrusted pull requests cannot read production values.
 
@@ -165,3 +166,20 @@ The editor uploads post images to Firebase Storage under `posts/`. One-time setu
 2. If the bucket is not `<project-id>.firebasestorage.app`, set `FIREBASE_STORAGE_BUCKET` in `.env` and as a repository secret.
 3. Generate and deploy the rules: `npm run build:rules`, then `firebase deploy --only storage`.
 4. Add `https://firebasestorage.googleapis.com` to `connect-src` in the CSP snippet above, then `nginx -t && systemctl reload nginx`. Images themselves load under the existing `img-src https:`.
+
+## Scheduled posts
+
+Choosing **Scheduled** in the editor saves the post privately with a `publishAt` time. The workflow runs every 15 minutes; its first step promotes due posts to `published`, so the same run builds and deploys them. GitHub can delay scheduled runs, so a post can go live a little after its time.
+
+The publisher needs write access, which the public Firestore rules never grant. One-time setup:
+
+1. Deploy the updated rules: `npm run build:rules`, then `firebase deploy --only firestore:rules`.
+2. Create a service account with only `roles/datastore.user`:
+   ```sh
+   gcloud iam service-accounts create post-publisher --project <project-id>
+   gcloud projects add-iam-policy-binding <project-id> --member serviceAccount:post-publisher@<project-id>.iam.gserviceaccount.com --role roles/datastore.user
+   gcloud iam service-accounts keys create key.json --iam-account post-publisher@<project-id>.iam.gserviceaccount.com
+   ```
+3. Store it as a secret and delete the local copy: `gh secret set FIREBASE_SERVICE_ACCOUNT < key.json && rm key.json`.
+
+Without the secret the step logs a warning and scheduled posts stay private.
