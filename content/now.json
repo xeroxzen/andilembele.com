@@ -1,0 +1,40 @@
+{
+  "updated": "2026-11-16",
+  "building": [
+    {
+      "title": "TraceGraph",
+      "url": "https://tracegraph.org/",
+      "note": "Incident reconstruction from audit logs, with evidence that verifies offline."
+    },
+    {
+      "title": "Optimeer Labs",
+      "url": "https://optimeerlabs.com",
+      "note": "Operational software and agentic workflows for founders and operators across Africa."
+    },
+    {
+      "title": "Vectra Dynamics",
+      "note": "Lumina, Rent A Room, and products for African markets."
+    },
+    {
+      "title": "Ferrite",
+      "url": "https://github.com/xeroxzen/ferrite-zk",
+      "note": "Rust crates for ZKTeco devices, in alpha on crates.io and looking for people with real hardware to test against."
+    }
+  ],
+  "reading": [
+    {
+      "title": "Designing Data-Intensive Applications",
+      "note": "Martin Kleppmann, read alongside the papers it builds on: Dynamo, GFS, Bigtable, MapReduce, and Kafka."
+    }
+  ],
+  "learning": [
+    {
+      "title": "Evals for coding agents",
+      "note": "A 12-week plan to publish a benchmark of 10 to 12 agentic software-engineering tasks drawn from production work, with graders I have tried to cheat and results with error bars."
+    },
+    {
+      "title": "Distributed systems",
+      "note": "Replication, partitioning, and consensus, from the original papers rather than summaries of them."
+    }
+  ]
+}

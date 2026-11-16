@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {shapeTrack,createClient,CACHE_MS} from '../services/now-playing/spotify.mjs';
-import {describe} from '../dist/now-playing.js';
+import {describe} from '../src/client/now-playing.js';
 
 const track={type:'track',name:'Song',artists:[{name:'A'},{name:'B'}],external_urls:{spotify:'https://open.spotify.com/track/1'},album:{images:[{url:'https://i.scdn.co/image/640',width:640},{url:'https://i.scdn.co/image/300',width:300},{url:'https://i.scdn.co/image/64',width:64}]}};
 const json=(status,body)=>({status,ok:status>=200&&status<300,json:async()=>body});
@@ -71,9 +71,10 @@ test('widget describes playing and last-played tracks and ignores untrusted link
  assert.equal(odd.image,null);
 });
 
-test('home page ships the widget and the public build includes its script',async()=>{
- const home=await readFile(new URL('../out/index.html',import.meta.url),'utf8');
- assert.match(home,/<div class="now-playing" id="now-playing" hidden><\/div>/);
- assert.match(home,/<script type="module" src="\/now-playing\.js\?v=[0-9a-f]{10}"><\/script>/);
- await readFile(new URL('../out/now-playing.js',import.meta.url));
+test('the Now page ships the widget and the site bundle includes its script',async()=>{
+ const now=await readFile(new URL('../out/now/index.html',import.meta.url),'utf8');
+ assert.match(now,/<div class="now-playing" id="now-playing" hidden><\/div>/);
+ assert.match(now,/<script type="module" src="\/site\.js\?v=[0-9a-f]{10}"><\/script>/);
+ const bundle=await readFile(new URL('../out/site.js',import.meta.url),'utf8');
+ assert.ok(bundle.includes('/api/now-playing'));
 });

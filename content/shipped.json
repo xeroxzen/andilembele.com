@@ -1,0 +1,98 @@
+[
+  {
+    "date": "2026-11-15",
+    "title": "Ferrite on crates.io",
+    "kind": "Release",
+    "domain": "Hardware",
+    "href": "/projects/ferrite/",
+    "summary": "zkteco-proto, zkteco-client, and zkctl: a sans-IO protocol core, an async client, and a CLI for ZKTeco devices."
+  },
+  {
+    "date": "2026-11-16",
+    "title": "Newsletter and scheduled posts",
+    "kind": "Product",
+    "domain": "Infrastructure",
+    "href": "/blog/",
+    "summary": "Readers can subscribe to new posts by email, and posts publish themselves at a set time."
+  },
+  {
+    "date": "2026-11-06",
+    "title": "domainwatch",
+    "kind": "Open source",
+    "domain": "Security",
+    "href": "https://github.com/xeroxzen/domainwatch",
+    "summary": "What an attacker sees of your domain: hostnames from certificate transparency logs, dangling CNAMEs, and lookalike domains."
+  },
+  {
+    "date": "2026-11-06",
+    "title": "dmarc-ready",
+    "kind": "Open source",
+    "domain": "Security",
+    "href": "https://github.com/xeroxzen/dmarc-ready",
+    "summary": "Reads DMARC aggregate reports and lists every sender that would lose mail under p=reject."
+  },
+  {
+    "date": "2026-11-06",
+    "title": "obsidian-switch",
+    "kind": "Open source",
+    "domain": "Fintech",
+    "href": "https://github.com/xeroxzen/obsidian-switch",
+    "summary": "A clean-room simulator of three payment-integration bugs that lose merchants money while the logs say HTTP 200."
+  },
+  {
+    "date": "2026-11-03",
+    "title": "oppwa-guard",
+    "kind": "Open source",
+    "domain": "Fintech",
+    "href": "https://github.com/xeroxzen/oppwa-guard",
+    "summary": "Server-side payment verification for OPPWA merchants: amount, currency, order, and crediting each payment exactly once."
+  },
+  {
+    "date": "2026-11-03",
+    "title": "spoofscore",
+    "kind": "Open source",
+    "domain": "Security",
+    "href": "https://xeroxzen.github.io/spoofscore/",
+    "summary": "Can someone send email as your company? SPF and DMARC checks in plain language, as a CLI, a library, and a web page."
+  },
+  {
+    "date": "2026-10-08",
+    "title": "AI lead qualification for GoHighLevel",
+    "kind": "Open source",
+    "domain": "AI",
+    "href": "https://github.com/xeroxzen/realtowers-ghl-demo",
+    "summary": "A webhook that scores commercial real-estate leads with a strict JSON schema, where code, not the model, decides the tier."
+  },
+  {
+    "date": "2026-09-13",
+    "title": "andilembele.com",
+    "kind": "Product",
+    "domain": "Infrastructure",
+    "href": "https://github.com/xeroxzen/andilembele.com",
+    "summary": "This site: a static portfolio with its own CMS for the journal, Medium sync, and tested CI deploys to my own server."
+  },
+  {
+    "date": "2026-07",
+    "title": "Rumi",
+    "kind": "Product",
+    "domain": "AI",
+    "href": "/projects/rumi/",
+    "summary": "A daily agent that turns 4,600 job postings into a short, evidence-backed shortlist."
+  },
+  {
+    "date": "2026-06",
+    "title": "Sentinel",
+    "kind": "Internal",
+    "domain": "Security",
+    "href": "/projects/sentinel/",
+    "summary": "Dependency, secrets, and policy checks on every pull request across the GitHub organisation."
+  },
+  {
+    "date": "2026-05",
+    "title": "VAIP / NetScout-RS",
+    "kind": "Internal",
+    "domain": "Security",
+    "href": "/projects/vaip-netscout-rs/",
+    "summary": "Network scanning and endpoint agents in Rust, with more than 500 tests."
+  }
+]

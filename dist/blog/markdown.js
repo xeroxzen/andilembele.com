@@ -1,7 +1,7 @@
 // Authoring extensions adapted from three/src/lib/blog-markdown.ts (MIT).
 // Raw HTML is deliberately rendered as text. Only safe URL schemes are linked.
 export const escapeHTML = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function safeURL(s){return /^(https?:\/\/|mailto:|\/media\/)/i.test(s) ? s : '';}
+export function safeURL(s){return /^(https?:\/\/|mailto:|\/media\/|\/assets\/)/i.test(s) ? s : '';}
 const MD_MAX_DEPTH=8;
 // Code spans are lifted out first so their contents never pick up bold, italics or links.
 function inline(s){
@@ -30,7 +30,8 @@ const mdIsTable=(lines,i)=>lines[i].includes('|')&&i+1<lines.length&&lines[i+1].
 const mdBlockStart=(lines,i)=>/^(#{1,6}\s|>|```|:::|<aside>\s*$)/.test(lines[i])||mdHr.test(lines[i])||mdItem.test(lines[i])||mdIsTable(lines,i);
 function mdTable(rows){
  const head=mdCells(rows[0]),align=mdCells(rows[1]).map(c=>c.endsWith(':')?(c.startsWith(':')?'center':'right'):'');
- const cell=(tag,text,k)=>`<${tag}${align[k]?` style="text-align:${align[k]}"`:''}>${inline(text)}</${tag}>`;
+ // Alignment is a class, not a style attribute, because the site's CSP blocks inline styles.
+ const cell=(tag,text,k)=>`<${tag}${align[k]?` class="align-${align[k]}"`:''}>${inline(text)}</${tag}>`;
  const body=rows.slice(2).map(r=>{const cells=mdCells(r);return '<tr>'+head.map((_,k)=>cell('td',cells[k]||'',k)).join('')+'</tr>';}).join('');
  return `<div class="table-wrap"><table><thead><tr>${head.map((h,k)=>cell('th',h,k)).join('')}</tr></thead>${body?`<tbody>${body}</tbody>`:''}</table></div>`;
 }
@@ -99,14 +100,30 @@ function mdListEnd(lines,start){
  while(i<lines.length&&(belongs(lines[i])||(!lines[i].trim()&&i+1<lines.length&&belongs(lines[i+1]))))i++;
  return i;
 }
+// Footnotes: "[^id]" in the text and "[^id]: note" on its own line. Only defined ids become links, and never inside code.
+const mdFootnoteDef=/^\[\^([\w-]{1,32})\]:\s+(.+)$/;
+const MD_MAX_FOOTNOTES=64;
+function mdFootnotes(html,notes){
+ if(!notes.size)return html;
+ const ids=[...notes.keys()];
+ const linked=html.split(/(<pre[\s\S]*?<\/pre>|<code>[\s\S]*?<\/code>)/).map((part,k)=>k%2?part:part.replace(/\[\^([\w-]{1,32})\]/g,(m,id)=>notes.has(id)?`<sup class="fn-ref"><a href="#fn-${id}" id="fnref-${id}">${ids.indexOf(id)+1}</a></sup>`:m)).join('');
+ return linked+`<section class="footnotes" aria-label="Footnotes"><ol>${ids.map(id=>`<li id="fn-${id}">${inline(notes.get(id))} <a href="#fnref-${id}" aria-label="Back to text">↩</a></li>`).join('')}</ol></section>`;
+}
 export function markdown(input,depth=0){
  if(depth>MD_MAX_DEPTH)return `<p>${inline(input)}</p>`;
- const lines=input.replace(/^\uFEFF/,'').replace(/\r/g,'').split('\n');let html='',i=0;
+ let source=input.replace(/^\uFEFF/,'').replace(/\r/g,'');
+ const notes=new Map();
+ if(depth===0){
+  source=source.split('\n').filter(l=>{const m=l.match(mdFootnoteDef);if(!m||notes.size>=MD_MAX_FOOTNOTES)return true;notes.set(m[1],m[2]);return false;}).join('\n');
+ }
+ const lines=source.split('\n');let html='',i=0;
  while(i<lines.length){let line=lines[i++];if(!line.trim())continue;
  if(line.startsWith('```')){const lang=mdLang(line.slice(3));let block=[];while(i<lines.length&&!lines[i].startsWith('```'))block.push(lines[i++]);i++;html+=`<pre${lang?` data-lang="${lang}"`:''}><code${lang?` class="language-${lang}"`:''}>${mdHighlight(block.join('\n'),lang)}</code></pre>`;continue;}
  if(/^:::(lede|stat|sources)$/.test(line)){const kind=line.slice(3),block=[];while(i<lines.length&&lines[i]!==':::')block.push(lines[i++]);i++;
  if(kind==='stat'){const fields=Object.fromEntries(block.map(l=>{let n=l.indexOf(':');return [l.slice(0,n).trim(),l.slice(n+1).trim()]}));html+=`<aside class="blog-stat"><span>${inline(fields.label||'')}</span><strong>${inline(fields.value||'')}</strong><p>${inline(fields.note||'')}</p></aside>`;}
  else html+=`<div class="blog-${kind}">${markdown(block.join('\n'),depth+1)}</div>`;continue;}
+ const toggle=line.match(/^:::toggle\s+(.+)$/);
+ if(toggle){const block=[];while(i<lines.length&&lines[i]!==':::')block.push(lines[i++]);i++;html+=`<details class="toggle"><summary>${inline(toggle[1])}</summary><div class="toggle-body">${markdown(block.join('\n'),depth+1)}</div></details>`;continue;}
  if(line.trim()==='<aside>'){const block=[];while(i<lines.length&&lines[i].trim()!=='</aside>')block.push(lines[i++]);i++;html+=mdAside(block,depth);continue;}
  const h=line.match(/^(#{1,6})\s+(.+?)(?:\s+#+)?\s*$/);if(h){const n=Math.min(6,h[1].length+1);html+=`<h${n}>${inline(h[2])}</h${n}>`;continue;}
  if(mdHr.test(line)){html+='<hr>';continue;}
@@ -114,6 +131,6 @@ export function markdown(input,depth=0){
  if(mdIsTable(lines,i-1)){const rows=[line,lines[i++]];while(i<lines.length&&lines[i].trim()&&lines[i].includes('|'))rows.push(lines[i++]);html+=mdTable(rows);continue;}
  if(mdItem.test(line)){const end=mdListEnd(lines,i-1);html+=mdList(lines.slice(i-1,end),depth);i=end;continue;}
  let p=[line];while(i<lines.length&&lines[i].trim()&&!mdBlockStart(lines,i))p.push(lines[i++]);html+=`<p>${inline(p.join('\n')).replace(/\n/g,'<br>')}</p>`;
- }return html;
+ }return depth===0?mdFootnotes(html,notes):html;
 }
-export const blogSnippets={heading:'\n## Section title\n\n',quote:'\n> A key idea.\n\n',callout:'\n> [!NOTE]\n> Something the reader should not miss.\n\n',table:'\n| Column | Column |\n| --- | --- |\n| Cell | Cell |\n\n',lede:':::lede\nYour opening paragraph.\n:::\n\n',stat:':::stat\nlabel: Metric\nvalue: Value\nnote: Context and source.\n:::\n\n',sources:':::sources\n1. [Source title](https://example.com)\n:::\n',code:'\n```rust\n// Code here\n```\n'};
+export const blogSnippets={heading:'\n## Section title\n\n',quote:'\n> A key idea.\n\n',callout:'\n> [!NOTE]\n> Something the reader should not miss.\n\n',table:'\n| Column | Column |\n| --- | --- |\n| Cell | Cell |\n\n',lede:':::lede\nYour opening paragraph.\n:::\n\n',stat:':::stat\nlabel: Metric\nvalue: Value\nnote: Context and source.\n:::\n\n',sources:':::sources\n1. [Source title](https://example.com)\n:::\n',code:'\n```rust\n// Code here\n```\n',toggle:'\n:::toggle Show the details\nHidden until the reader opens it.\n:::\n\n',footnote:'[^1]\n\n[^1]: The source or aside.\n'};

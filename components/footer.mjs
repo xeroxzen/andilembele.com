@@ -17,5 +17,5 @@ function renderPlaylist() {
 }
 
 export function renderFooter() {
-  return `<footer><div class="footer-start"><span>Andile Jaden Mbele</span>${renderPlaylist()}</div><nav class="social-links" aria-label="Social links">${socialLinks.map(({label,url,icon}) => `<a href="${url}"><img src="/assets/icons/${icon}.svg" alt="" width="16" height="16">${label} <span aria-hidden="true">↗</span></a>`).join('')}</nav></footer>`;
+  return `<footer><div class="footer-inner"><div class="footer-start"><span>Andile Jaden Mbele</span>${renderPlaylist()}<p class="footer-hint js-only">Press <kbd data-mod-key>⌘</kbd><kbd>K</kbd> to jump anywhere, or <kbd>/</kbd> for shortcuts.</p></div><nav class="social-links" aria-label="Social links">${socialLinks.map(({label,url,icon}) => `<a href="${url}"><img src="/assets/icons/${icon}.svg" alt="" width="16" height="16">${label} <span aria-hidden="true">↗</span></a>`).join('')}</nav></div></footer>`;
 }

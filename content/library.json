@@ -1,0 +1,23 @@
+[
+  { "title": "The Pragmatic Programmer", "author": "Andrew Hunt and David Thomas", "year": 1999, "kind": "Book", "topic": "Craft" },
+  { "title": "Code Complete", "author": "Steve McConnell", "year": 2004, "kind": "Book", "topic": "Craft" },
+  { "title": "Clean Code", "author": "Robert C. Martin", "year": 2008, "kind": "Book", "topic": "Craft" },
+  { "title": "The Passionate Programmer", "author": "Chad Fowler", "year": 2009, "kind": "Book", "topic": "Career" },
+  { "title": "Designing Data-Intensive Applications", "author": "Martin Kleppmann", "year": 2017, "kind": "Book", "topic": "Distributed systems" },
+  { "title": "Zero to One", "author": "Peter Thiel with Blake Masters", "year": 2014, "kind": "Book", "topic": "Startups" },
+  { "title": "Systems Performance", "author": "Brendan Gregg", "year": 2020, "kind": "Book", "topic": "Performance" },
+  { "title": "The Little Book of Deep Learning", "author": "François Fleuret", "year": 2023, "kind": "Book", "topic": "AI" },
+  { "title": "An Axiomatic Basis for Computer Programming", "author": "C. A. R. Hoare", "year": 1969, "kind": "Paper", "topic": "Correctness" },
+  { "title": "On the Criteria To Be Used in Decomposing Systems into Modules", "author": "David Parnas", "year": 1972, "kind": "Paper", "topic": "Design" },
+  { "title": "Why Functional Programming Matters", "author": "John Hughes", "year": 1990, "kind": "Paper", "topic": "Design" },
+  { "title": "A Note on Distributed Computing", "author": "Jim Waldo and others", "year": 1994, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "A Metrics Suite for Object Oriented Design", "author": "Shyam Chidamber and Chris Kemerer", "year": 1994, "kind": "Paper", "topic": "Design" },
+  { "title": "The Google File System", "author": "Sanjay Ghemawat, Howard Gobioff, and Shun-Tak Leung", "year": 2003, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "MapReduce", "author": "Jeffrey Dean and Sanjay Ghemawat", "year": 2004, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "Bigtable", "author": "Fay Chang and others", "year": 2006, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "Out of the Tar Pit", "author": "Ben Moseley and Peter Marks", "year": 2006, "kind": "Paper", "topic": "Design" },
+  { "title": "Dynamo", "author": "Giuseppe DeCandia and others", "year": 2007, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "What Every Programmer Should Know About Memory", "author": "Ulrich Drepper", "year": 2007, "kind": "Paper", "topic": "Performance" },
+  { "title": "Bitcoin: A Peer-to-Peer Electronic Cash System", "author": "Satoshi Nakamoto", "year": 2008, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "Kafka: a Distributed Messaging System for Log Processing", "author": "Jay Kreps, Neha Narkhede, and Jun Rao", "year": 2011, "kind": "Paper", "topic": "Distributed systems" }
+]

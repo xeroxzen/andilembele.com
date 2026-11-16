@@ -16,7 +16,7 @@ const passwordHash=password?scryptSync(password,'andile-local-admin',32):null;
 const sessions=new Map();let failures=0,blockedUntil=0;
 function authenticated(req){if(!passwordHash)return true;const id=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('cms_session='))?.slice(12);const expiry=sessions.get(id);if(!expiry||expiry<Date.now()){sessions.delete(id);return false;}sessions.set(id,Date.now()+30*60*1000);return true;}
 
-const types={'.json':'application/json; charset=utf-8','.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.pdf':'application/pdf','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
+const types={'.json':'application/json; charset=utf-8','.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.pdf':'application/pdf','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.woff2':'font/woff2'};
 function json(res,value,status=200){res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));}
 async function body(req,limit=300000){let chunks=[],n=0;for await(const c of req){n+=c.length;if(n>limit)throw Error('File or request is too large');chunks.push(c);}return Buffer.concat(chunks);}
 return async(req,res)=>{try{
@@ -60,7 +60,7 @@ return async(req,res)=>{try{
  if(!['GET','HEAD'].includes(req.method))return json(res,{error:'Method not allowed'},405);
  let file;
  if(pathname.startsWith('/media/')){if(!/^\/media\/[a-f0-9-]+\.(png|jpg|webp)$/.test(pathname))throw Error('Invalid media path');file=path.join(data,pathname.slice(1));}
- else {const route=pathname==='/'?'/index.html':pathname==='/admin'||pathname==='/admin/'||pathname==='/admin/posts'||pathname==='/blog'||pathname==='/blog/'||/^\/blog\/[a-z0-9-]+$/.test(pathname)?'/blog/index.html':pathname;file=path.resolve(root,'.'+route);if(!file.startsWith(root))return json(res,{error:'Forbidden'},403);}
+ else {const route=pathname==='/'?'/index.html':pathname==='/admin'||pathname==='/admin/'||pathname==='/admin/posts'||pathname==='/blog'||pathname==='/blog/'||/^\/blog\/[a-z0-9-]+$/.test(pathname)?'/blog/index.html':pathname.endsWith('/')?pathname+'index.html':pathname;file=path.resolve(root,'.'+route);if(!file.startsWith(root))return json(res,{error:'Forbidden'},403);}
  const bytes=await readFile(file);res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);
  }catch(e){if(e.code==='ENOENT')return json(res,{error:'Not found'},404);json(res,{error:e.message||'Request failed'},400);}
 };

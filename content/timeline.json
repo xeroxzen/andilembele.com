@@ -1,0 +1,72 @@
+[
+  {
+    "org": "TraceGraph",
+    "url": "https://tracegraph.org/",
+    "role": "Founding Engineer",
+    "kind": "Work",
+    "start": "2026-09",
+    "summary": "Building incident reconstruction for regulated institutions, rebuilding incidents from existing audit logs into a causal graph where every step links to the original record in a signed ledger, with evidence that verifies offline."
+  },
+  {
+    "org": "ZimWorx",
+    "role": "Senior Software Engineer",
+    "kind": "Work",
+    "start": "2025-08",
+    "end": "2026-10",
+    "summary": "Operated a four-region AWS platform spanning 37 ECS services, 15+ running EC2 instances, 4 RDS databases, and 13 Lambda functions. Maintained 50+ production repositories and built the deployment, security, inventory, and alerting automation around them."
+  },
+  {
+    "org": "ExactNav",
+    "role": "Full-stack Software Engineer",
+    "location": "California, USA",
+    "kind": "Work",
+    "start": "2025-10",
+    "end": "2026-06",
+    "summary": "Built fintech software for private equity and venture capital fund administration: capital calls and distributions, portfolio accounting, Plaid-powered bank synchronization, and client-ready PDF and Excel financial statements."
+  },
+  {
+    "org": "District 4 Labs",
+    "role": "Data Engineer",
+    "kind": "Work",
+    "start": "2022-09",
+    "end": "2025-05",
+    "summary": "Built Python ETL and parsing systems that turned large, irregular SQL, JSON, CSV, XML, and spreadsheet datasets into analysis-ready records, with streaming and concurrent processing, encoding recovery, and schema normalization for data too messy or large for off-the-shelf tools."
+  },
+  {
+    "org": "Solugrowth",
+    "role": "Lead Software Engineer",
+    "kind": "Work",
+    "start": "2024-08",
+    "end": "2024-12",
+    "summary": "Built a Django app that ranks software vendors with the Analytic Hierarchy Process, setting criteria weights automatically to reduce bias, with CSV and PDF export."
+  },
+  {
+    "org": "First Source Technology",
+    "role": "Software Engineer Intern → Lead Software Developer",
+    "kind": "Work",
+    "start": "2020-04",
+    "end": "2021-10",
+    "summary": "Built NLP systems for COVID-19 public awareness in Victoria Falls, the applied AI work that shaped my focus on natural language systems. Promoted to Lead Software Developer in February 2021."
+  },
+  {
+    "org": "Vectra Dynamics",
+    "role": "Founding Engineer",
+    "kind": "Venture",
+    "start": "2023",
+    "summary": "Building Lumina, Rent A Room, and products for African markets."
+  },
+  {
+    "org": "Optimeer Labs",
+    "url": "https://optimeerlabs.com",
+    "role": "Lead Engineer",
+    "kind": "Venture",
+    "summary": "Product and engineering studio building operational software, internal tools, dashboards, and agentic workflows for founders and operators across Africa."
+  },
+  {
+    "org": "Emzini We Code",
+    "role": "Teaching Assistant → Co-Instructor",
+    "kind": "Community",
+    "start": "2020",
+    "summary": "Seasonal volunteer teaching CS7: Structure and Interpretation of Computer Programs."
+  }
+]

@@ -41,7 +41,9 @@ test('blog shell leaves og:url unset so shared article links keep their ?post= a
 });
 test('journal post pages carry the article title, description, and address for link previews',async()=>{
  const {renderPostPage,postSummary}=await import('../components/post-page.mjs');
- const template=await readFile(new URL('../templates/blog.html',import.meta.url),'utf8');
+ const {renderBlogShell,renderMenus}=await import('../components/layout.mjs');
+ const {loadContent}=await import('../lib/content.mjs');
+ const template=renderBlogShell(await readFile(new URL('../templates/blog.html',import.meta.url),'utf8'),renderMenus(await loadContent()));
  const post={title:'Agents & "macOS"',slug:'local-agents',excerpt:'',content:'## Setup\nRun **one** <b>agent</b> per [user](https://example.com).\n\n'+'word '.repeat(80),date:'2026-10-01',tags:['ai'],coverImage:'',status:'published'};
  const summary=postSummary(post);
  assert.ok(summary.startsWith('Setup Run one <b>agent</b> per user.'));

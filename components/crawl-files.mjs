@@ -18,9 +18,9 @@ export function renderRobots(origin) {
 }
 
 /**
- * sitemap.xml: the homepage, the writing index, and every prerendered journal post.
+ * sitemap.xml: the homepage, the static pages, the writing index, and every prerendered journal post.
  */
-export function renderSitemap(origin, journal) {
+export function renderSitemap(origin, journal, pages = []) {
   checkOrigin(origin);
   assert.ok(Array.isArray(journal), 'renderSitemap: journal must be an array');
   const entry = (path, lastmod) => `<url><loc>${escapeXML(origin + path)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
@@ -29,7 +29,11 @@ export function renderSitemap(origin, journal) {
     assert.match(post.date, DATE, 'renderSitemap: invalid date for ' + post.slug);
     return entry('/blog/' + post.slug + '/', post.date);
   });
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[entry('/'), entry('/blog/'), ...posts].join('')}</urlset>\n`;
+  const statics = pages.filter((path) => path !== '/' && path !== '/blog/').map((path) => {
+    assert.match(path, /^\/([a-z0-9-]+\/)+$/, 'renderSitemap: invalid page path ' + path);
+    return entry(path);
+  });
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[entry('/'), ...statics, entry('/blog/'), ...posts].join('')}</urlset>\n`;
 }
 
 const pubDate = (date) => new Date(date + 'T12:00:00Z').toUTCString();
