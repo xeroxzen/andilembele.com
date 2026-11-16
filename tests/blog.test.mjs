@@ -90,3 +90,17 @@ test('article cards fit long titles and render at the advertised size',async()=>
  assert.equal(decoded.height,ARTICLE_IMAGE.height);
  assert.ok(card.length<=300_000,'link previewers drop large images');
 });
+
+test('articles get share links for X and LinkedIn, with the native share button hidden until the browser offers one',async()=>{
+ const {shareTargets,shareMarkup}=await import('../dist/blog/listing.js');
+ const url='https://andilembele.com/blog/building-ferrite/',title='Building Ferrite: "pyzk" & Rust';
+ const to=shareTargets(url,title);
+ assert.equal(to.x,'https://x.com/intent/post?text=Building%20Ferrite%3A%20%22pyzk%22%20%26%20Rust&url=https%3A%2F%2Fandilembele.com%2Fblog%2Fbuilding-ferrite%2F');
+ assert.equal(to.linkedin,'https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fandilembele.com%2Fblog%2Fbuilding-ferrite%2F');
+ assert.throws(()=>shareTargets('javascript:alert(1)',title));
+ const html=shareMarkup(url,title);
+ assert.match(html,/<button type="button" data-share-native hidden>/);
+ assert.match(html,/data-share-copy/);
+ assert.match(html,/href="https:\/\/x\.com\/intent\/post\?text=[^"]+" target="_blank" rel="noopener"/);
+ assert.doesNotMatch(html,/"pyzk"/);
+});

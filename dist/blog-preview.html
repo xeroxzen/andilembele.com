@@ -172,6 +172,9 @@ function archive(posts,pages){let year='';return posts.map(p=>{const y=p.date.sl
 // FNV-1a over the markup: lets the page tell whether the list it fetched is the one the build already rendered.
 function markupHash(markup){let hash=0x811c9dc5;for(let i=0;i<markup.length;i+=1){hash^=markup.charCodeAt(i);hash=Math.imul(hash,0x01000193);}return (hash>>>0).toString(16).padStart(8,'0');}
 function indexMarkup(posts,pages){const sorted=visiblePosts(posts);return `<section class="blog-head"><a class="back-home" href="/">← About Andile</a><p class="eyebrow">Andile Jaden Mbele / Writing</p><h1>Writing.</h1><p class="about">Software, infrastructure, and data.</p><div class="writing-links"><a href="https://medium.com/@andilembele">Medium ↗</a><a href="https://rooibosradar.com/">Rooibos Radar ↗</a></div></section><section id="latest" aria-label="Latest article">${sorted.length?'<p class="small-heading">Latest</p>'+postCard(sorted[0],true,pages):''}</section><section class="writing-archive" aria-label="Writing archive"><div class="archive-heading"><h2>All writing</h2><span id="post-count">${sorted.length} articles</span></div><form class="browse-controls" id="browse" role="search" hidden><label class="search-label">Search articles<input id="search" type="search" placeholder="Search writing…" autocomplete="off"></label><label>Topic<select id="topic"><option value="">All topics</option>${[...new Set(posts.flatMap(p=>p.tags))].sort().map(t=>`<option value="${e(t)}">${e(topicLabel(t))}</option>`).join('')}</select></label><label>Source<select id="source"><option value="">Everywhere</option><option value="Medium">Medium</option><option value="Journal">This website</option></select></label></form><div id="results">${archive(sorted,pages)}</div><div class="archive-bottom"><p id="results-status" role="status"></p><button id="more" type="button" hidden>More articles ↓</button><button id="reset-filters" type="button" hidden>Clear filters</button></div></section>${subscribeMarkup()}<aside class="writing-signoff"><p>More from my corner of the internet.</p><a href="https://medium.com/@andilembele">Follow on Medium ↗</a></aside>`;}
+// Share links for an article. The native share button stays hidden until /blog/app.js finds navigator.share.
+function shareTargets(url,title){if(!/^https?:\/\/[^\s]+$/.test(url))throw Error('shareTargets: url must be http or https');const u=encodeURIComponent(url),t=encodeURIComponent(title);return {x:`https://x.com/intent/post?text=${t}&url=${u}`,linkedin:`https://www.linkedin.com/sharing/share-offsite/?url=${u}`};}
+function shareMarkup(url,title){const to=shareTargets(url,title);return `<div class="share" role="group" aria-label="Share this article"><span class="share-label">Share</span><button type="button" data-share-native hidden>Share…</button><a class="share-link" href="${e(to.x)}" target="_blank" rel="noopener">X</a><a class="share-link" href="${e(to.linkedin)}" target="_blank" rel="noopener">LinkedIn</a><button type="button" data-share-copy>Copy link</button><span class="share-status" role="status" data-share-status></span></div>`;}
 
 const e=escapeHTML;
 const app=document.querySelector('#app');
@@ -185,6 +188,17 @@ const meta=p=>`${e(dateLabel(p.date))} · ${p.source==='Medium'?'Medium':reading
 function article(p){return `${p.coverImage?`<img class="cover" src="${e(p.coverImage)}" alt="">`:''}<p class="eyebrow">${meta(p)}</p><h1>${e(p.title)}</h1>${p.excerpt?`<p class="lead">${e(p.excerpt)}</p>`:''}<div class="prose">${markdown(p.content)}</div>`;}
 // The shell answers several addresses, so its canonical link is set here rather than at build time.
 function canonical(path){let link=document.querySelector('link[rel="canonical"]');if(!link){link=document.createElement('link');link.rel='canonical';document.head.append(link);}link.href=location.origin+path;}
+// Native share where the browser has it; otherwise copy the link. A dismissed share sheet is not an error.
+function initShare(root,data){
+ const status=root.querySelector('[data-share-status]');
+ const copy=async()=>{try{await navigator.clipboard.writeText(data.url);status.textContent='Link copied.';}catch{status.textContent='Copy the address from your browser.';}};
+ const share=async()=>{try{await navigator.share(data);}catch(error){if(error.name!=='AbortError')await copy();}};
+ const native=typeof navigator.share==='function';
+ root.querySelector('[data-share-native]').hidden=!native;
+ root.querySelector('[data-share-native]').onclick=share;
+ root.querySelector('[data-share-copy]').onclick=copy;
+ root.querySelector('[data-share-top]').onclick=native?share:copy;
+}
 async function publicPage(){
  const preview=document.body.dataset.preview==='true';
  const slug=preview?'':new URLSearchParams(location.search).get('post')||location.pathname.split('/')[2];
@@ -202,13 +216,14 @@ async function publicPage(){
   const pretty='/blog/'+post.slug+'/';
   const prerendered=(document.body.dataset.pages||'').split(' ').includes(post.slug);
   if(location.pathname!==pretty&&prerendered)history.replaceState(null,'',pretty+location.hash);
+  const shareUrl=location.origin+(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
   canonical(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
-  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div>${subscribeMarkup()}<nav id="related" aria-label="More writing"></nav></section>`;
+  app.innerHTML=`<section class="article"><div class="article-top"><a class="back-home" href="/blog">← All writing</a><button type="button" class="share-top" data-share-top>Share</button></div>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p>${shareMarkup(shareUrl,post.title)}</div>${subscribeMarkup()}<nav id="related" aria-label="More writing"></nav></section>`;
   document.querySelector('meta[name="description"]').content=post.excerpt;
   addCopyButtons(app);
   const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
   if(headings.length>2){const contents=document.createElement('details');contents.className='article-contents';contents.innerHTML='<summary>In this article</summary><ol>'+headings.map((h,i)=>{h.id='section-'+(i+1);return `<li><a href="#${h.id}">${e(h.textContent)}</a></li>`;}).join('')+'</ol>';app.querySelector('.prose').before(contents);}
-  document.querySelector('#copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser.';}};
+  initShare(app,{url:shareUrl,title:post.title,text:post.excerpt});
   document.querySelector('#related').innerHTML='<h2 class="small-heading">More writing</h2>'+archive(posts.filter(p=>p!==post).slice(0,2));return;
  }
  const markup=indexMarkup(posts);

@@ -1,5 +1,5 @@
 import {markdown,escapeHTML as e,blogSnippets,importMarkdown,localImagePaths,relinkImages} from './markdown.js';
-import {indexMarkup,markupHash,visiblePosts,archive,dateLabel,subscribeMarkup} from './listing.js';
+import {indexMarkup,markupHash,visiblePosts,archive,dateLabel,subscribeMarkup,shareMarkup} from './listing.js';
 import {toLocalInput,fromLocalInput,localDate} from './schedule.js';
 const app=document.querySelector('#app');
 const remote=document.body.dataset.cms==='firebase';
@@ -12,6 +12,17 @@ const meta=p=>`${e(dateLabel(p.date))} · ${p.source==='Medium'?'Medium':reading
 function article(p){return `${p.coverImage?`<img class="cover" src="${e(p.coverImage)}" alt="">`:''}<p class="eyebrow">${meta(p)}</p><h1>${e(p.title)}</h1>${p.excerpt?`<p class="lead">${e(p.excerpt)}</p>`:''}<div class="prose">${markdown(p.content)}</div>`;}
 // The shell answers several addresses, so its canonical link is set here rather than at build time.
 function canonical(path){let link=document.querySelector('link[rel="canonical"]');if(!link){link=document.createElement('link');link.rel='canonical';document.head.append(link);}link.href=location.origin+path;}
+// Native share where the browser has it; otherwise copy the link. A dismissed share sheet is not an error.
+function initShare(root,data){
+ const status=root.querySelector('[data-share-status]');
+ const copy=async()=>{try{await navigator.clipboard.writeText(data.url);status.textContent='Link copied.';}catch{status.textContent='Copy the address from your browser.';}};
+ const share=async()=>{try{await navigator.share(data);}catch(error){if(error.name!=='AbortError')await copy();}};
+ const native=typeof navigator.share==='function';
+ root.querySelector('[data-share-native]').hidden=!native;
+ root.querySelector('[data-share-native]').onclick=share;
+ root.querySelector('[data-share-copy]').onclick=copy;
+ root.querySelector('[data-share-top]').onclick=native?share:copy;
+}
 async function publicPage(){
  const preview=document.body.dataset.preview==='true';
  const slug=preview?'':new URLSearchParams(location.search).get('post')||location.pathname.split('/')[2];
@@ -29,13 +40,14 @@ async function publicPage(){
   const pretty='/blog/'+post.slug+'/';
   const prerendered=(document.body.dataset.pages||'').split(' ').includes(post.slug);
   if(location.pathname!==pretty&&prerendered)history.replaceState(null,'',pretty+location.hash);
+  const shareUrl=location.origin+(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
   canonical(prerendered?pretty:'/blog/?post='+encodeURIComponent(post.slug));
-  app.innerHTML=`<section class="article"><a class="back-home" href="/blog">← All writing</a>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p><button id="copy-link" type="button">Copy article link</button><span id="copy-status" role="status"></span></div>${subscribeMarkup()}<nav id="related" aria-label="More writing"></nav></section>`;
+  app.innerHTML=`<section class="article"><div class="article-top"><a class="back-home" href="/blog">← All writing</a><button type="button" class="share-top" data-share-top>Share</button></div>${article(post)}<div class="article-end"><p>Andile Jaden Mbele</p>${shareMarkup(shareUrl,post.title)}</div>${subscribeMarkup()}<nav id="related" aria-label="More writing"></nav></section>`;
   document.querySelector('meta[name="description"]').content=post.excerpt;
   addCopyButtons(app);
   const headings=[...app.querySelectorAll('.prose h2,.prose h3')];
   if(headings.length>2){const contents=document.createElement('details');contents.className='article-contents';contents.innerHTML='<summary>In this article</summary><ol>'+headings.map((h,i)=>{h.id='section-'+(i+1);return `<li><a href="#${h.id}">${e(h.textContent)}</a></li>`;}).join('')+'</ol>';app.querySelector('.prose').before(contents);}
-  document.querySelector('#copy-link').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);document.querySelector('#copy-status').textContent='Link copied.';}catch{document.querySelector('#copy-status').textContent='Copy the address from your browser.';}};
+  initShare(app,{url:shareUrl,title:post.title,text:post.excerpt});
   document.querySelector('#related').innerHTML='<h2 class="small-heading">More writing</h2>'+archive(posts.filter(p=>p!==post).slice(0,2));return;
  }
  const markup=indexMarkup(posts);
