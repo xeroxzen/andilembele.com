@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {notify} from '../lib/notify.mjs';
+import {notify,checkKey} from '../lib/notify.mjs';
 // Usage: node scripts/notify-subscribers.mjs <posts live before this release> <posts in this release>
 const [previousPath,currentPath]=process.argv.slice(2);
 if(!previousPath||!currentPath)throw Error('Pass the previous and current journal-posts.json paths');
@@ -10,4 +10,5 @@ let previous;
 try{previous=JSON.parse(await readFile(previousPath,'utf8'));}catch(error){console.log(`::warning::Could not read the posts live before this release (${error.message}); no emails sent.`);process.exit(0);}
 const current=JSON.parse(await readFile(currentPath,'utf8'));
 const sent=await notify({previous,current,origin,apiKey,fetch});
-console.log(sent.length?`Emailed subscribers about: ${sent.join(', ')}`:'No new posts to email.');
+if(sent.length)console.log(`Emailed subscribers about: ${sent.join(', ')}`);
+else{const problem=await checkKey({apiKey,fetch});console.log(problem?`::warning::${problem}`:'No new posts to email. Buttondown API key works.');}

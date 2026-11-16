@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {newPosts,emailFor,notify,MAX_NOTIFY} from '../lib/notify.mjs';
+import {newPosts,emailFor,notify,checkKey,MAX_NOTIFY} from '../lib/notify.mjs';
 import {subscribeMarkup} from '../dist/blog/listing.js';
 
 const post=(slug,title=slug,excerpt='')=>({slug,title,excerpt,status:'published'});
@@ -31,6 +31,11 @@ test('notify sends each new post once and refuses bulk changes',async()=>{
  await assert.rejects(notify({previous:[],current:bulk,origin,apiKey:'k',fetch}),/bulk import/);
  assert.equal(calls.length,1);
  await assert.rejects(notify({previous:[],current:[post('x')],origin,apiKey:'k',fetch:async()=>json(400,{})}),/HTTP 400/);
+});
+
+test('key check reads without sending',async()=>{
+ assert.equal(await checkKey({apiKey:'k',fetch:async(url,init)=>{assert.equal(init.method,undefined);assert.equal(init.headers.Authorization,'Token k');return json(200,{});}}),'');
+ assert.match(await checkKey({apiKey:'k',fetch:async()=>json(401,{})}),/HTTP 401/);
 });
 
 test('signup form appears only with a valid newsletter name',()=>{
