@@ -18,7 +18,7 @@ test('the hero draws its line art, moves data packets, and reads its headline on
  const home=await read('out/index.html');
  assert.match(home,/<svg class="art art-hero"[^>]*aria-hidden="true"/);
  assert.equal((home.match(/<animateMotion /g)||[]).length,3);
- assert.match(home,/<h1 class="display" id="hero-title" aria-label="I build secure, data-heavy systems — from 40B-record pipelines to AI tooling\."><span aria-hidden="true">/);
+ assert.match(home,/<h1 class="display" id="hero-title" aria-label="I build secure, data-heavy systems, from 40B-record pipelines to AI tooling\."><span aria-hidden="true">/);
  assert.match(home,/<em class="headline-em">secure,<\/em>/);
  assert.match(home,/<dd data-count-to="40" data-suffix="B\+">40B\+<\/dd>/);
 });
