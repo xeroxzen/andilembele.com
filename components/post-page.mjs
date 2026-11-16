@@ -3,7 +3,7 @@ import { renderSocialMeta } from './social-meta.mjs';
 import { renderFooter } from './footer.mjs';
 import { ARTICLE_IMAGE } from './og-image.mjs';
 import { markdown, escapeHTML as e } from '../dist/blog/markdown.js';
-import { dateLabel } from '../dist/blog/listing.js';
+import { dateLabel, subscribeMarkup } from '../dist/blog/listing.js';
 
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const SUMMARY_LENGTH = 200;
@@ -31,7 +31,7 @@ export function renderPostPage(template, post) {
   assert.equal(post.status, 'published', 'renderPostPage: post must be published');
   const description = postSummary(post);
   const page = { title: post.title, description, path: '/blog/' + post.slug + '/', date: post.date, image: { path: '/assets/og/' + post.slug + '.jpg', ...ARTICLE_IMAGE } };
-  const content = `<section class="article"><a class="back-home" href="/blog">← All writing</a><p class="eyebrow">${e(dateLabel(post.date))}</p><h1>${e(post.title)}</h1>${post.excerpt ? `<p class="lead">${e(post.excerpt)}</p>` : ''}<div class="prose">${markdown(post.content)}</div></section>`;
+  const content = `<section class="article"><a class="back-home" href="/blog">← All writing</a><p class="eyebrow">${e(dateLabel(post.date))}</p><h1>${e(post.title)}</h1>${post.excerpt ? `<p class="lead">${e(post.excerpt)}</p>` : ''}<div class="prose">${markdown(post.content)}</div>${subscribeMarkup()}</section>`;
   const html = template
     .replace(/<title>[^<]*<\/title>/, `<title>${e(post.title)} · Andile Jaden Mbele</title>`)
     .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${e(description)}">`)

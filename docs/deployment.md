@@ -76,7 +76,7 @@ add_header X-Content-Type-Options "nosniff" always;
 add_header X-XSS-Protection "1; mode=block" always;
 add_header Strict-Transport-Security "max-age=31536000" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN> https://open.spotify.com; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com; connect-src 'self' https://firestore.googleapis.com https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://<FIREBASE_AUTH_DOMAIN> https://open.spotify.com; img-src 'self' https: data:; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://buttondown.com; frame-ancestors 'none'" always;
 ```
 
 `frame-src` holds `FIREBASE_AUTH_DOMAIN` from `.env`, which frames the admin sign-in popup, and `open.spotify.com` for the footer playlist player.
@@ -136,6 +136,7 @@ The workflow expects these repository settings:
 | Secret | `DEPLOY_SSH_KEY` | Dedicated private key used only by GitHub Actions |
 | Secret | `DEPLOY_KNOWN_HOSTS` | Pinned SSH host-key entry for `139.84.233.151` |
 | Secret | `FIREBASE_SERVICE_ACCOUNT` | Key JSON for the post publisher service account (see Scheduled posts) |
+| Secret | `BUTTONDOWN_API_KEY` | Buttondown API key with email write and sending access (see Newsletter) |
 
 The Firebase build values and `CMS_ADMIN_EMAILS` are also stored as GitHub Actions secrets. Pull requests fall back to inert placeholders, so untrusted pull requests cannot read production values.
 
@@ -183,3 +184,19 @@ The publisher needs write access, which the public Firestore rules never grant. 
 3. Store it as a secret and delete the local copy: `gh secret set FIREBASE_SERVICE_ACCOUNT < key.json && rm key.json`.
 
 Without the secret the step logs a warning and scheduled posts stay private.
+
+## Newsletter (Buttondown)
+
+The blog index and every post show a signup form that posts to Buttondown, which sends the confirmation email and handles unsubscribes. After a deploy succeeds, the workflow compares the posts that were live before with the new release and emails subscribers about each new post (title, excerpt, link) through the Buttondown API.
+
+- A post counts as new only if neither its slug nor its title was live before, so renaming a slug sends nothing.
+- More than two new posts in one release (a restore or bulk import) sends nothing and fails the step, so it gets noticed.
+- Emails are sent after the release is live, so a failure is never retried: at most one email per post.
+
+One-time setup:
+
+1. Set `NEWSLETTER` in `dist/blog/listing.js` to the Buttondown newsletter name. The form stays hidden until then.
+2. Create an API key at https://buttondown.com/keys with write access to emails and sending, then `gh secret set BUTTONDOWN_API_KEY`.
+3. The CSP above allows `form-action https://buttondown.com`.
+
+Without the secret the step logs a warning and sends nothing.

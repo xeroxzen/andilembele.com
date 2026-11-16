@@ -112,6 +112,9 @@ jobs:
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
 
+      - name: Record posts live before this release
+        run: curl --fail --silent --show-error --output previous-posts.json "$DEPLOY_URL/blog/journal-posts.json" || rm -f previous-posts.json
+
       - name: Upload immutable release
         run: |
           set -euo pipefail
@@ -130,3 +133,18 @@ jobs:
           curl --fail --silent --show-error --retry 5 --retry-all-errors \
             --output "$smoke_file" "$DEPLOY_URL"
           grep -Fq "Andile Jaden Mbele" "$smoke_file"
+
+      - name: Check out subscriber notifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: repo
+          sparse-checkout: |
+            lib/notify.mjs
+            scripts/notify-subscribers.mjs
+          sparse-checkout-cone-mode: false
+
+      - name: Email subscribers about new posts
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+          SITE_URL: ${{ env.DEPLOY_URL }}
+        run: node repo/scripts/notify-subscribers.mjs previous-posts.json site/blog/journal-posts.json
