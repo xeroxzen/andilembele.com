@@ -80,11 +80,14 @@ test('the blog index is prerendered and admin routes show the workspace placehol
 test('the blog index carries the hash of the list the client would render, so it skips an identical redraw',async()=>{
  const blog=await read('blog/index.html');
  const medium=JSON.parse(await read('blog/medium-posts.json'));
+ // Deploys snapshot the published journal posts before building; local and pull-request builds have none.
+ let journal=[];
+ try{journal=JSON.parse(await readFile(new URL('../dist/blog/journal-posts.json',import.meta.url),'utf8'));}catch(error){if(error.code!=='ENOENT')throw error;}
+ const posts=[...journal,...medium],slugs=journal.map(p=>p.slug);
  const stamp=blog.match(/<main id="app" data-rendered="([0-9a-f]{8})"/)[1];
- // Local builds have no journal snapshot, so the prerendered list is the Medium posts alone.
- assert.equal(stamp,markupHash(indexMarkup(medium)));
- assert.equal(markupHash(indexMarkup([...medium].reverse())),stamp,'order of the fetched posts does not matter');
- assert.notEqual(markupHash(indexMarkup(medium.slice(1))),stamp);
+ assert.equal(stamp,markupHash(indexMarkup(posts,slugs)));
+ assert.equal(markupHash(indexMarkup([...medium].reverse())),markupHash(indexMarkup(medium)),'order of the fetched posts does not matter');
+ assert.notEqual(markupHash(indexMarkup(posts.slice(1),slugs)),stamp);
  assert.equal(markupHash(''),'811c9dc5');
 });
 
