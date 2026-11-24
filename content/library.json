@@ -19,5 +19,7 @@
   { "title": "Dynamo", "author": "Giuseppe DeCandia and others", "year": 2007, "kind": "Paper", "topic": "Distributed systems" },
   { "title": "What Every Programmer Should Know About Memory", "author": "Ulrich Drepper", "year": 2007, "kind": "Paper", "topic": "Performance" },
   { "title": "Bitcoin: A Peer-to-Peer Electronic Cash System", "author": "Satoshi Nakamoto", "year": 2008, "kind": "Paper", "topic": "Distributed systems" },
-  { "title": "Kafka: a Distributed Messaging System for Log Processing", "author": "Jay Kreps, Neha Narkhede, and Jun Rao", "year": 2011, "kind": "Paper", "topic": "Distributed systems" }
+  { "title": "Kafka: a Distributed Messaging System for Log Processing", "author": "Jay Kreps, Neha Narkhede, and Jun Rao", "year": 2011, "kind": "Paper", "topic": "Distributed systems" },
+  { "title": "Attention Is All You Need", "author": "Ashish Vaswani and others", "year": 2017, "kind": "Paper", "topic": "AI" },
+  { "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning", "author": "DeepSeek-AI", "year": 2025, "kind": "Paper", "topic": "AI" }
 ]
