@@ -23,7 +23,7 @@ test('front matter is required and case study sections follow the template order
 test('shipped entries and the bookshelf validate and stay newest-first friendly',async()=>{
  const {shipped,library,projects}=await loadContent();
  assert.ok(shipped.length>0&&library.length>0);
- for(const entry of shipped)if(entry.href.startsWith('/projects/'))assert.ok(projects.some(p=>entry.href===`/projects/${p.slug}/`),entry.href);
+ for(const entry of shipped)if(entry.href?.startsWith('/projects/'))assert.ok(projects.some(p=>entry.href===`/projects/${p.slug}/`),entry.href);
  assert.equal(new Set(library.map(b=>b.title)).size,library.length,'duplicate bookshelf title');
 });
 

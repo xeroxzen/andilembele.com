@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16",
+  "updated": "2026-11-24",
   "building": [
     {
       "title": "TraceGraph",
@@ -19,6 +19,11 @@
       "title": "Ferrite",
       "url": "https://github.com/xeroxzen/ferrite-zk",
       "note": "Rust crates for ZKTeco devices, in alpha on crates.io and looking for people with real hardware to test against."
+    },
+    {
+      "title": "Restowa",
+      "url": "https://github.com/xeroxzen/restowa",
+      "note": "A macOS menu bar app that restores AI coding-agent sessions after a restart, for Claude Code, Codex, OpenCode, and Antigravity."
     }
   ],
   "reading": [

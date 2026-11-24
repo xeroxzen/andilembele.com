@@ -67,8 +67,8 @@ function calendarGrid(month, items, today) {
 
 function calendarItem(item) {
   const day = item.date.length === 10 ? String(Number(item.date.slice(8))) : '';
-  const external = /^https:/.test(item.href);
-  const title = `<a href="${e(item.href)}"${external ? ' rel="noopener"' : ''}>${e(item.title)}${external ? ' <span aria-hidden="true">↗</span>' : ''}</a>`;
+  const external = /^https:/.test(item.href ?? '');
+  const title = item.href ? `<a href="${e(item.href)}"${external ? ' rel="noopener"' : ''}>${e(item.title)}${external ? ' <span aria-hidden="true">↗</span>' : ''}</a>` : e(item.title);
   return `<li ${itemAttrs(item)}><span class="calendar-date">${day ? `<span class="visually-hidden">${MONTH_NAMES[Number(item.date.slice(5, 7)) - 1]} </span>${day}` : '<span class="calendar-undated">Month</span>'}</span><div><p class="calendar-item-title">${title}</p><p class="calendar-summary">${e(item.summary)}</p><p class="calendar-props">${item.props}</p></div></li>`;
 }
 
