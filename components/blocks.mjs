@@ -93,7 +93,7 @@ export function pageHeader({ title, lead = '', art = null, eyebrow = '' }) {
 export function listView(items) {
   assert.ok(items.length <= MAX_ITEMS, 'listView: too many items');
   const row = (item) => {
-    const target = item.external ? ' rel="noopener"' : '';
+    const target = item.external ? ' target="_blank" rel="noopener"' : '';
     const arrow = item.external ? '↗' : '→';
     return `<li><a class="list-row" href="${e(item.href)}"${target}><span class="list-title">${e(item.title)}</span><span class="list-meta">${e(item.meta)}</span><span class="list-arrow" aria-hidden="true">${arrow}</span></a></li>`;
   };
@@ -107,7 +107,7 @@ export function galleryCard(item) {
   const inner = `<span class="card-cover cover-${e(item.cover)}" aria-hidden="true"></span>${item.icon ? pageIcon(item.icon, item.cover, 'card') : ''}<span class="card-title">${e(item.title)}</span><span class="card-summary">${e(item.summary)}</span><span class="card-props">${item.props}</span>`;
   if (!item.href) return `<div class="card card-static">${inner}</div>`;
   const external = /^https:/.test(item.href);
-  return `<a class="card" href="${e(item.href)}"${external ? ' rel="noopener"' : ''}>${inner}</a>`;
+  return `<a class="card" href="${e(item.href)}"${external ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>`;
 }
 
 export function gallery(items) {

@@ -4,6 +4,7 @@
     "title": "Hawkeye",
     "kind": "Internal",
     "domain": "AI",
+    "href": "/projects/hawkeye/",
     "summary": "Theft detection for retail stores that runs on an edge box: detection and tracking on the camera feed, a rules engine, and staff alerts with a snapshot and a short clip."
   },
   {
@@ -11,7 +12,7 @@
     "title": "Restowa",
     "kind": "Open source",
     "domain": "AI",
-    "href": "https://github.com/xeroxzen/restowa",
+    "href": "/projects/restowa/",
     "summary": "A macOS menu bar app that restores Claude Code, Codex, OpenCode, and Antigravity sessions after a restart. Install it with Homebrew."
   },
   {
@@ -19,7 +20,7 @@
     "title": "Falcon 9 simulator",
     "kind": "Open source",
     "domain": "Data",
-    "href": "https://xeroxzen.github.io/falcon-9-simulator/",
+    "href": "/projects/falcon-9-simulator/",
     "summary": "A 3D browser simulation of a Falcon 9 launch and booster landing, with vehicle parameters fitted to real flight data and checked with Monte Carlo runs."
   },
   {
