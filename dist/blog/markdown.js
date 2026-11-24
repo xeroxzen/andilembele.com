@@ -7,7 +7,7 @@ const MD_MAX_DEPTH=8;
 function inline(s){
  const codes=[];
  const text=escapeHTML(String(s).replace(/\u0000/g,'')).replace(/`([^`]+)`/g,(_,c)=>{codes.push(c);return `\u0000${codes.length-1}\u0000`;});
- return text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/~~([^~]+)~~/g,'<del>$1</del>').replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<img loading="lazy" src="${u}" alt="${a}">`:a).replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<a href="${u}" rel="noopener noreferrer">${a}</a>`:a).replace(/&lt;br\s*\/?&gt;/gi,'<br>').replace(/\u0000(\d+)\u0000/g,(_,n)=>`<code>${codes[Number(n)]}</code>`);
+ return text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/~~([^~]+)~~/g,'<del>$1</del>').replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<img loading="lazy" src="${u}" alt="${a}">`:a).replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,a,u)=>safeURL(u)?`<a href="${u}"${/^https?:/i.test(u)?' target="_blank"':''} rel="noopener noreferrer">${a}</a>`:a).replace(/&lt;br\s*\/?&gt;/gi,'<br>').replace(/\u0000(\d+)\u0000/g,(_,n)=>`<code>${codes[Number(n)]}</code>`);
 }
 const mdHashComments=/^(py|python|sh|bash|shell|zsh|console|yaml|yml|toml|ruby|rb|r|dockerfile|makefile|nginx|ini|conf)$/;
 const mdKeywords=new Set('as async await break case catch class const continue crate def default defer del do done elif else enum esac except export extends false fi fn for from func if impl import in interface let loop match mod move mut new nil None not null or package pass pub raise ref return self Self static struct super switch then throw trait true True False try type typeof use var where while with yield'.split(' '));

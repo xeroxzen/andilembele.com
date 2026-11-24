@@ -152,7 +152,7 @@ function projectLinks(links) {
   const labels = { live: 'Website', repo: 'Source', writeup: 'Write-up', caseStudy: 'Case study' };
   return Object.entries(labels).filter(([key]) => links[key]).map(([key, label]) => {
     const external = /^https:/.test(links[key]);
-    return `<a href="${e(links[key])}"${external ? ' rel="noopener"' : ''}>${label}${external ? ' <span aria-hidden="true">↗</span>' : ''}</a>`;
+    return `<a href="${e(links[key])}"${external ? ' target="_blank" rel="noopener"' : ''}>${label}${external ? ' <span aria-hidden="true">↗</span>' : ''}</a>`;
   }).join('');
 }
 
@@ -180,7 +180,7 @@ export function projectPage({ projects }, index) {
 
 function nowSection(title, items) {
   if (!items.length) return '';
-  const rows = items.map((item) => `<li><p class="now-title">${item.url ? `<a href="${e(item.url)}" rel="noopener">${e(item.title)} <span aria-hidden="true">↗</span></a>` : e(item.title)}</p>${item.note ? `<p class="now-note">${e(item.note)}</p>` : ''}</li>`).join('');
+  const rows = items.map((item) => `<li><p class="now-title">${item.url ? `<a href="${e(item.url)}" target="_blank" rel="noopener">${e(item.title)} <span aria-hidden="true">↗</span></a>` : e(item.title)}</p>${item.note ? `<p class="now-note">${e(item.note)}</p>` : ''}</li>`).join('');
   return block(`<h2>${e(title)}</h2><ul class="now-list">${rows}</ul>`, { className: 'section-tight' });
 }
 
@@ -206,7 +206,7 @@ function bookshelf(library) {
 }
 
 function talkGallery(talks) {
-  return `<ul class="talks">${talks.map((t) => `<li><a class="talk" href="${e(t.url)}" rel="noopener"><picture><source type="image/webp" srcset="${t.image}.webp"><img src="${t.image}.jpg" alt="${e(t.alt)}" width="${t.width}" height="${t.height}" loading="lazy"></picture><span class="talk-title">${e(t.title)}</span><span class="talk-meta">${e(t.event)} · ${t.year}</span></a></li>`).join('')}</ul>`;
+  return `<ul class="talks">${talks.map((t) => `<li><a class="talk" href="${e(t.url)}" target="_blank" rel="noopener"><picture><source type="image/webp" srcset="${t.image}.webp"><img src="${t.image}.jpg" alt="${e(t.alt)}" width="${t.width}" height="${t.height}" loading="lazy"></picture><span class="talk-title">${e(t.title)}</span><span class="talk-meta">${e(t.event)} · ${t.year}</span></a></li>`).join('')}</ul>`;
 }
 
 export function aboutPage({ site, timeline, talks, library }) {
@@ -219,7 +219,7 @@ export function aboutPage({ site, timeline, talks, library }) {
 }
 
 function resumeRoles(roles) {
-  return roles.map((r) => `<article class="resume-role"><header><h3>${r.url ? `<a href="${e(r.url)}" rel="noopener">${e(r.org)}</a>` : e(r.org)}</h3><p class="resume-period">${e(periodLabel(r))}</p></header><p class="resume-title">${e(r.role)}${r.location ? ` · ${e(r.location)}` : ''}</p><p>${e(r.summary)}</p></article>`).join('');
+  return roles.map((r) => `<article class="resume-role"><header><h3>${r.url ? `<a href="${e(r.url)}" target="_blank" rel="noopener">${e(r.org)}</a>` : e(r.org)}</h3><p class="resume-period">${e(periodLabel(r))}</p></header><p class="resume-title">${e(r.role)}${r.location ? ` · ${e(r.location)}` : ''}</p><p>${e(r.summary)}</p></article>`).join('');
 }
 
 export function resumePage({ site, timeline, talks }) {
@@ -235,7 +235,7 @@ export function resumePage({ site, timeline, talks }) {
 
 export function contactPage({ site }) {
   const email = `<p class="contact-email"><a href="mailto:${e(site.email)}">${e(site.email)}</a><button class="button js-only" type="button" data-copy-text="${e(site.email)}">Copy</button></p>`;
-  const elsewhere = `<ul class="contact-links">${socialLinks.map((l) => `<li><a href="${e(l.url)}" rel="noopener">${e(l.label)} <span aria-hidden="true">↗</span></a></li>`).join('')}</ul>`;
+  const elsewhere = `<ul class="contact-links">${socialLinks.map((l) => `<li><a href="${e(l.url)}" target="_blank" rel="noopener">${e(l.label)} <span aria-hidden="true">↗</span></a></li>`).join('')}</ul>`;
   const main = pageHeader({ title: 'Get in touch', lead: site.availability, art: 'contact' }) + block(email) + openToBlock(site, { id: 'roles', heading: 'What I am looking for', more: null }) + block(callout({ title: 'What helps', body: '<p>A line on what you are building, where you are stuck, and your timeline.</p>' })) + block(`<h2>Elsewhere</h2>${elsewhere}`, { className: 'section-tight' });
   return { path: '/contact/', title: `Contact · ${NAME}`, description: site.availability, current: '/contact/', main, card: { eyebrow: 'Contact', title: 'Get in touch' } };
 }
